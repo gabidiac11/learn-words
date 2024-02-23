@@ -12,11 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: npm ci && npm run build
-      - env:
-          REACT_APP_FIREBASE_CONFIG: ${{ secrets.LEARN_WORD_REACT_APP_FIREBASE_CONFIG }}
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_LEARN_WORD_56D10 }}'
           channelId: live
           projectId: learn-word-56d10
+        env:
+          REACT_APP_FIREBASE_CONFIG: ${{ secrets.LEARN_WORD_REACT_APP_FIREBASE_CONFIG }}
