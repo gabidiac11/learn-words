@@ -1,0 +1,179 @@
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// set font family
+// quick and dirty solution
+body * {
+  font-family: 'Trebuchet MS', sans-serif !important;
+}
+
+body * {
+  box-sizing: border-box;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+.main {
+  width: 100vw;
+  height: 100vh;
+  flex-wrap: nowrap;
+  overflow: auto;
+  position: relative;
+}
+
+//  ##### ##### ##### ##### ##### FORMS ##### ##### ##### ##### ##### 
+.form {
+  padding-top: 60px;
+}
+
+input {
+  background-color: white!important;
+}
+
+.form-control {
+  margin-bottom: 46px!important;
+}
+
+.form-label[data-shrink='true'] {
+  top: -20px!important;
+}
+
+.form-button {
+  background-color: #212121;
+}
+
+.form .form-button {
+  display: flex;
+  margin-bottom: 15px;
+  background-color: #212121;
+}
+
+.text-box input {
+  min-width: 250px;
+}
+
+.error-message {
+  color: crimson;
+  word-wrap: break-word;
+  text-align: center;
+  line-height: 200%;
+}
+
+button {
+  text-transform: none!important;
+}
+
+//  ##### ##### ##### ##### ##### other ##### ##### ##### ##### ##### 
+.icon-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-right: 5px;
+}
+
+.outline-none {
+  outline: none;
+  user-select: none;
+}
+
+.react-pdf__Page__textContent {
+  left: 0 !important;
+  width: 100% !important;
+}
+
+.no-btn {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+}
+
+.view {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 40px;
+  position: relative;
+}
+
+.view-content.view-items {
+  display: flex;
+  flex-wrap: wrap;
+  width: auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.view-items-section {
+  display: flex;
+  flex-wrap: wrap;
+  width: auto;
+  padding: 20px 0;
+  justify-content: center;
+}
+
+.flex {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+// UTILS
+.cursor-point {
+  cursor: pointer;
+}
+
+.disabled {
+  opacity: 0.5;
+}
+
+.flex-center-column {
+  display: flex;
+  align-items: center;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-start {
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.flex-center-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-image-container {
+  width: 100%;
+  height: 250px;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
