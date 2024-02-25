@@ -5,6 +5,10 @@ import { BrowserRouter, useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import { useAuthInit } from "./auth/authHooks";
 import { LoaderView } from "./components/Loader";
+import { SrtFilePage } from "./pages/SrtFilePage";
+import Header from "./components/Header";
+import { LearnedWordsPage } from "./pages/LearnedWordsPage";
+import { WordsToLearnPage } from "./pages/WordsToLearnPage";
 
 function App() {
   const { user, isVerifying } = useAuthInit();
@@ -16,13 +20,19 @@ function App() {
     <BrowserRouter>
       <div className="main">
         {user ? (
-          <Routes>
-            <Route path="/home" element={<Home />} />
-            <Route
-              path="*"
-              element={<DefaultRouteRedirection isAuth={isAuth} />}
-            />
-          </Routes>
+          <>
+            <Header />
+            <Routes>
+              <Route path="/home" element={<Home />} />
+              <Route path="/learned-words" element={<LearnedWordsPage />} />
+              <Route path="/words-to-learn" element={<WordsToLearnPage />} />
+              <Route path="/srt" element={<SrtFilePage />} />
+              <Route
+                path="*"
+                element={<DefaultRouteRedirection isAuth={isAuth} />}
+              />
+            </Routes>
+          </>
         ) : (
           <Routes>
             <Route path="/login" element={<Login />} />

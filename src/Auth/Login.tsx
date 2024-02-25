@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { signInWithEmailAndPassword, UserCredential } from "firebase/auth";
 import { auth } from "../firebase";
 import {
@@ -12,9 +12,11 @@ import "./auth.scss";
 import { useFetchPromise } from "../hooks/useFetchData";
 import { useOnEnter } from "../utils";
 import { FetchError, FetchFirebaseError } from "../hooks/error-types";
+import { useSnackActions } from "../app-context/useSnackActions";
 
 const Login = () => {
   const { executeFetch, loading, error } = useFetchPromise<UserCredential>();
+  const { displayError } = useSnackActions();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,6 +26,10 @@ const Login = () => {
   }, [email, password, executeFetch]);
 
   const onEnterSubmit = useOnEnter(onSubmit);
+
+  useEffect(() => {
+    error && displayError(computeError(error));
+  }, [error, displayError])
 
   return (
     <div className="view login-page">
@@ -78,29 +84,18 @@ const Login = () => {
             {!loading && "Așa, tati!"}
           </Button>
         </FormGroup>
-
-        {error && (
-          <div className="error-message" tabIndex={0}>
-            {computeError(error)}
-          </div>
-        )}
       </div>
     </div>
   );
 };
 
-function computeError(error: FetchError): React.ReactNode {
+function computeError(error: FetchError): string {
   const firebaseError = error as FetchFirebaseError;
   switch (firebaseError.originalError.code) {
     case "auth/invalid-email":
       return "Băăă, ce-i cu poșta aia electronică?!";
     case "auth/invalid-credential":
-      return (
-        <>
-          Nu stiu pe nimeni, nene...<br></br>Ori pui ceva bun,
-          ori valea, nene!
-        </>
-      );
+      return "Nu stiu pe nimeni, nene... Ori pui ceva bun, ori valea, nene!";
   }
   return error.message;
 }

@@ -9,6 +9,7 @@ permissions:
   pull-requests: write
 env:
   REACT_APP_FIREBASE_CONFIG: ${{ secrets.LEARN_WORD_REACT_APP_FIREBASE_CONFIG }}
+  REACT_APP_DB_ROOT_KEY: ${{ secrets.LEARN_WORD_REACT_APP_DB_ROOT_KEY }}
 jobs:
   build_and_preview:
     if: '${{ github.event.pull_request.head.repo.full_name == github.repository }}'

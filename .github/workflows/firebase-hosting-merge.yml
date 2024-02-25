@@ -8,6 +8,7 @@ name: Deploy to Firebase Hosting on merge
       - main
 env:
   REACT_APP_FIREBASE_CONFIG: ${{ secrets.LEARN_WORD_REACT_APP_FIREBASE_CONFIG }}
+  REACT_APP_DB_ROOT_KEY: ${{ secrets.LEARN_WORD_REACT_APP_DB_ROOT_KEY }}
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
