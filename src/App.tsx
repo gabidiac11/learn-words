@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import Home from "./Pages/Home";
-import Login from "./Auth/Login";
+import Home from "./pages/Home";
+import Login from "./auth/Login";
 import { BrowserRouter, useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
-import { useAuthInit } from "./Auth/authHooks";
-import { LoaderView } from "./Components/Loader";
+import { useAuthInit } from "./auth/authHooks";
+import { LoaderView } from "./components/Loader";
 
 function App() {
   const { user, isVerifying } = useAuthInit();

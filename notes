@@ -2,5 +2,6 @@
 - upload file
 - upload srt file
 - add a url to a html page (articles) and highlight unknown words
+- download srt files with styling on unknown words 
 
 - page with known word (to remove from list)
