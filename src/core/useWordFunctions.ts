@@ -28,14 +28,14 @@ export const useWordFunctions = () => {
         .slice(0, 20)
         // eslint-disable-next-line no-useless-escape
         .replace(/[\.\#\$\/\[\]\s]/g, "_")}-${uuidv4()}`;
-      const result = await set(`records/${key}`, {
-        type: RecordType.Srt,
-        name,
-        content,
-      });
-      if (result.isError()) {
-        throw result;
-      }
+      // const result = await set(`records/${key}`, {
+      //   type: RecordType.Srt,
+      //   name,
+      //   content,
+      // });
+      // if (result.isError()) {
+      //   throw result;
+      // }
 
       return {
         key,

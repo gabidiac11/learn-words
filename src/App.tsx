@@ -5,10 +5,11 @@ import { BrowserRouter, useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import { useAuthInit } from "./auth/authHooks";
 import { LoaderView } from "./components/Loader";
-import { SrtFilePage } from "./pages/SrtFilePage";
+import { UploadFilePage } from "./pages/UploadFilePage";
 import Header from "./components/Header";
 import { LearnedWordsPage } from "./pages/LearnedWordsPage";
 import { WordsToLearnPage } from "./pages/WordsToLearnPage";
+import { routes as r } from "./routes";
 
 function App() {
   const { user, isVerifying } = useAuthInit();
@@ -23,10 +24,16 @@ function App() {
           <>
             <Header />
             <Routes>
-              <Route path="/home" element={<Home />} />
-              <Route path="/learned-words" element={<LearnedWordsPage />} />
-              <Route path="/words-to-learn" element={<WordsToLearnPage />} />
-              <Route path="/srt" element={<SrtFilePage />} />
+              <Route path={r.Home.path} element={<Home />} />
+              <Route
+                path={r.LearnedWords.path}
+                element={<LearnedWordsPage />}
+              />
+              <Route
+                path={r.WordsToLearn.path}
+                element={<WordsToLearnPage />}
+              />
+              <Route path={r.File.path} element={<UploadFilePage />} />
               <Route
                 path="*"
                 element={<DefaultRouteRedirection isAuth={isAuth} />}
@@ -35,7 +42,7 @@ function App() {
           </>
         ) : (
           <Routes>
-            <Route path="/login" element={<Login />} />
+            <Route path={r.Login.path} element={<Login />} />
             <Route
               path="*"
               element={<DefaultRouteRedirection isAuth={isAuth} />}
