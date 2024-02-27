@@ -12,7 +12,7 @@ import { WordsToLearnPage } from "./pages/WordsToLearnPage";
 import { routes as r } from "./routes";
 import { WithInitialization } from "./components/WithInitialization";
 import { ErrorBoundary } from "react-error-boundary";
-import { ErrorBoundaryFallback } from "./components/ErrorBoundary/ErrorBoundaryFallback";
+import { ErrorBoundaryFallback } from "./components/ErrorBoundaryFallback";
 
 function App() {
   const { user, isVerifying } = useAuthInit();

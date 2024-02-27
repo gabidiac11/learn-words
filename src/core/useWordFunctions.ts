@@ -54,7 +54,9 @@ export const useWordFunctions = () => {
         wordsToLearn: [],
       };
     },
-    [set]
+    [
+      // set
+    ]
   );
 
   const addLearnedWord = useCallback(
