@@ -1,6 +1,10 @@
 import { getDatabase, ref } from "@firebase/database";
 import firebaseApp from "../firebase";
-import { get as firebaseGet, set as firebaseSet } from "@firebase/database";
+import {
+  get as firebaseGet,
+  set as firebaseSet,
+  remove as firebaseRemove,
+} from "@firebase/database";
 import Result, { AppGenericError } from "./types";
 import { log } from "./logger";
 import { dbRootPathKey } from "../constants";
@@ -53,6 +57,30 @@ export const useDatabase = () => {
     [db, decoratedPath]
   );
 
+  const getArray = useCallback(
+    async <T>(path: string): Promise<Result<T[]>> => {
+      const result = await get<{ [key: string]: T }>(path);
+      if (result.isError()) return result.As<T[]>();
+
+      const values = Object.entries(result.data ?? {}).reduce(
+        (array, [indexStr, value]) => {
+          if (Number.isNaN(indexStr)) {
+            throw Result.ErrorMessage("Something is wrong with data indexing");
+          }
+          const index = Number(indexStr);
+          if(index < 0) {
+            throw Result.ErrorMessage(`Something is wrong with data indexing: invalid index: ${index}`);
+          }
+          array[Number(index)] = value;
+          return array;
+        },
+        [] as T[]
+      );
+      return Result.Success(values);
+    },
+    [get]
+  );
+
   const set = useCallback(
     async <T>(path: string, item: T) => {
       removeUndefined(item);
@@ -72,6 +100,32 @@ export const useDatabase = () => {
       } finally {
         log(
           `DB_SET: '${decoratedPath(path)}': [FINISHED] at ${
+            (Date.now() - time) / 1000
+          }s\n`
+        );
+      }
+    },
+    [db, decoratedPath]
+  );
+
+  const remove = useCallback(
+    async (path: string) => {
+      const time = Date.now();
+      log(`\nDB_REMOVE: '${decoratedPath(path)}': [STARTED]`);
+      try {
+        await firebaseRemove(ref(db, decoratedPath(path)));
+        return Result.Success(null);
+      } catch (error) {
+        log(
+          `[db]: error occured at path '${decoratedPath(path)}'`,
+          getStringifiedError(error)
+        );
+        return Result.Error(
+          new AppGenericError("Something went wrong.", error)
+        );
+      } finally {
+        log(
+          `DB_REMOVE: '${decoratedPath(path)}': [FINISHED] at ${
             (Date.now() - time) / 1000
           }s\n`
         );
@@ -102,7 +156,9 @@ export const useDatabase = () => {
 
   return {
     get,
+    getArray,
     set,
+    remove,
     exists,
   };
 };

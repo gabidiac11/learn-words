@@ -1,15 +1,18 @@
-import { Typography } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { Box, Typography } from "@mui/material";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Pagination from "@mui/material/Pagination";
 import { useRefState } from "../../hooks/useRefState";
 import "./PaginatedWords.scss";
 import AppSelect from "../AppSelect";
 import { uuidv4 } from "@firebase/util";
 import { useAppStateContext } from "../../app-context/useAppState";
+import { useWordFunctions } from "../../core/useWordFunctions";
+import { getErrorMessage } from "../../utils";
+import { useUIFeedback } from "../../app-context/useUIFeedback";
 
-const pageOptions = [
-  20, 50, 100, 150, 200, 250, 500, 500, 1000, 1200, 1500,
-].map((value) => ({ value }));
+const pageOptions = [20, 50, 100, 150, 200, 250, 500, 1000, 1200, 1500].map(
+  (value) => ({ value })
+);
 
 export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
   const [pagination, setPagination] = useState({
@@ -18,7 +21,8 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
     key: uuidv4(),
   });
   const { learnedWords } = useAppStateContext();
-  console.log({ learnedWords });
+  const { addLearnedWord, removeLearnedWord } = useWordFunctions();
+  const { displayError } = useUIFeedback();
 
   const startIndex = pagination.page * pagination.count - pagination.count;
   const endIndex = pagination.page * pagination.count;
@@ -26,6 +30,19 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
 
   const [isFocused, setIsFocused] = useRefState<boolean>(false);
   const refContainer = useRef<HTMLDivElement>(null);
+
+  const onClickWordItem = useCallback(
+    async (word: string) => {
+      try {
+        await (learnedWords[word]
+          ? removeLearnedWord(word)
+          : addLearnedWord(word));
+      } catch (error) {
+        displayError(getErrorMessage(error));
+      }
+    },
+    [addLearnedWord, displayError, learnedWords, removeLearnedWord]
+  );
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
@@ -49,15 +66,9 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
       if (!isFocused) {
         return;
       }
-      if (e.key === "ArrowRight") {
-        if (pagination.page + 1 > numOfPages) {
-          return;
-        }
+      if (e.key === "ArrowRight" && pagination.page + 1 <= numOfPages) {
         setPagination({ ...pagination, page: pagination.page + 1 });
-      } else if (e.key === "ArrowLeft") {
-        if (pagination.page - 1 <= 0) {
-          return;
-        }
+      } else if (e.key === "ArrowLeft" && pagination.page - 1 > 0) {
         setPagination({ ...pagination, page: pagination.page - 1 });
       }
     };
@@ -96,6 +107,7 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
             setPagination({ ...pagination, page });
           }}
         />
+        <Box>{words.length} unique words.</Box>
       </div>
       <div className="word-items">
         {words.map(([w, count], i) => {
@@ -103,7 +115,12 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
             return null;
           }
           return (
-            <div key={i} className="word-item">
+            <div
+              key={i}
+              className="word-item"
+              style={{ opacity: learnedWords[w] ? 0.2 : 1 }}
+              onClick={() => onClickWordItem(w)}
+            >
               <Typography
                 variant="h6"
                 noWrap
@@ -113,6 +130,7 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
               >
                 <span
                   style={{
+                    // TODO: make a cool color scheme based on num of occurences
                     color: `rgba(${Math.floor(count / 100) * 10},${0},${0}, 1)`,
                   }}
                 >

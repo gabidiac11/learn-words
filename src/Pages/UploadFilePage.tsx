@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import { useCallback, useState } from "react";
-import { useSnackActions } from "../app-context/useSnackActions";
+import { useUIFeedback } from "../app-context/useUIFeedback";
 import { useFileFunctions } from "../core/useFileFunctions";
 import { useWordFunctions } from "../core/useWordFunctions";
 import { Record } from "../model.types";
@@ -9,7 +9,7 @@ import { PaginatedWords } from "../components/PaginatedWords/PaginatedWords";
 import { FileInput } from "../components/FileInput";
 
 export const UploadFilePage = () => {
-  const { displayError } = useSnackActions();
+  const { displayError } = useUIFeedback();
   const { extractWords, readFile } = useFileFunctions();
   const { addSrtRecord } = useWordFunctions();
 
@@ -24,23 +24,14 @@ export const UploadFilePage = () => {
     async (file: File) => {
       try {
         const content = await readFile(file);
-        const wordsObj = extractWords(content).reduce((prev, w) => {
-          prev[w] = (prev[w] ?? 0) + 1;
-          return prev;
-        }, {} as { [key: string]: number });
-        const wordsOrdered = Object.entries(wordsObj).sort(
-          ([, count1], [, count2]) => {
-            if (count1 === count2) return 0;
-            return count1 > count2 ? -1 : 1;
-          }
-        );
+        const words = extractWords(content);
 
         const record = await addSrtRecord(file.name, content);
         setWordState({
           fileName: file.name,
           content,
           record,
-          words: wordsOrdered,
+          words,
         });
       } catch (error) {
         console.error(error);

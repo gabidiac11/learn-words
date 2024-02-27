@@ -33,6 +33,10 @@ export default class Result<T> {
     return result;
   }
 
+  public static ErrorMessage<T>(message: string) {
+    return Result.Error<T>(new AppGenericError(message));
+  }
+
   public static Errors<T>(messages: AppGenericError[]) {
     const result = new Result<T>();
     result.errors = messages;

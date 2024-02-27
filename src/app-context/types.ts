@@ -7,9 +7,9 @@ export type Snack = {
   onClose?: () => void;
 };
 export type State = {
-  snack: Snack|null;
-  learnedWords: string[],
-  wordsToLearn: string[],
+  snack: Snack | null;
+  learnedWords: { [key: string]: true };
+  wordsToLearn: string[];
 };
 
 export enum StateActionType {
@@ -17,7 +17,7 @@ export enum StateActionType {
   PushSnack = "PushSnack",
   RemoveSnack = "RemoveSnack",
   SetKnownWords = "SetKnownWords",
-  SetWordsToLearn = "SetWordsToLearn"
+  SetWordsToLearn = "SetWordsToLearn",
 }
 
 export type StateAction =
@@ -33,12 +33,14 @@ export type StateAction =
       payload: {
         key: string;
       };
-    } | {
+    }
+  | {
       type: StateActionType.SetKnownWords;
       payload: {
-        words: string[];
+        words: { [key: string]: true };
       };
-    } | {
+    }
+  | {
       type: StateActionType.SetWordsToLearn;
       payload: {
         words: string[];

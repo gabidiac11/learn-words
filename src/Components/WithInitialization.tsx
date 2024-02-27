@@ -1,22 +1,13 @@
-import { PropsWithChildren, useCallback, useEffect } from "react";
-import { useLearningActions } from "../app-context/useLearningActions";
+import { PropsWithChildren, useEffect } from "react";
 import { useWordFunctions } from "../core/useWordFunctions";
 
 export const WithInitialization = (props: PropsWithChildren) => {
-  const { getLearntWords, getWordsToLearn } = useWordFunctions();
-  const { setLearnWords, setWordsToLearn } = useLearningActions();
-
-  const initializeKnownWords = useCallback(async () => {
-    const learnedWords = await getLearntWords();
-    setLearnWords(learnedWords);
-
-    const wordsToLearn = await getWordsToLearn();
-    setWordsToLearn(wordsToLearn);
-  }, [getLearntWords, getWordsToLearn, setLearnWords, setWordsToLearn]);
+  const { initLearnedWords, initWordsToLearn } = useWordFunctions();
 
   useEffect(() => {
-    initializeKnownWords();
-  }, [initializeKnownWords]);
+    initLearnedWords();
+    initWordsToLearn();
+  }, [initLearnedWords, initWordsToLearn]);
 
   return <>{props.children}</>;
 };

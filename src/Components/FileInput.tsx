@@ -1,4 +1,4 @@
-import { useSnackActions } from "../app-context/useSnackActions";
+import { useUIFeedback } from "../app-context/useUIFeedback";
 import { AppGenericError } from "../core/types";
 import { useFileFunctions } from "../core/useFileFunctions";
 import { useWordFunctions } from "../core/useWordFunctions";
@@ -27,7 +27,7 @@ export const FileInput = (props: {
   onChange: (e: File) => Promise<unknown>;
 }) => {
   const [fileName, setFileName] = useState<string>();
-  const { displayError } = useSnackActions();
+  const { displayError } = useUIFeedback();
 
   const onChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {

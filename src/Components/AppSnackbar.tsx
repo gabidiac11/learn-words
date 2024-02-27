@@ -1,9 +1,9 @@
 import { Alert, Snackbar } from "@mui/material";
 import { useAppStateContext } from "../app-context/useAppState";
-import { useSnackActions } from "../app-context/useSnackActions";
+import { useUIFeedback } from "../app-context/useUIFeedback";
 
 export const AppSnackbar = () => {
-  const { removeSnack } = useSnackActions();
+  const { removeSnack } = useUIFeedback();
   const { snack } = useAppStateContext();
 
   return (

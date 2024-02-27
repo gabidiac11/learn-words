@@ -34,8 +34,8 @@ export default function AppSelect<T>({
           autoWidth
           label={label}
         >
-          {options.map((option) => (
-            <MenuItem value={String(option.value)}>
+          {options.map((option, i) => (
+            <MenuItem key={i} value={String(option.value)}>
               {String(option.displayValue ?? option.value)}
             </MenuItem>
           ))}

@@ -1,26 +1,35 @@
 import { uuidv4 } from "@firebase/util";
 import { useCallback } from "react";
+import { useAppStateContext } from "../app-context/useAppState";
+import { useLearningCtxActions } from "../app-context/useLearningCtxActions";
 import { Record, RecordType } from "../model.types";
+import { AppGenericError } from "./types";
 import { useDatabase } from "./useDatabase";
 
 export const useWordFunctions = () => {
-  const { get, set } = useDatabase();
+  const { getArray, set, remove } = useDatabase();
+  const { setLearnedWords, setWordsToLearn } = useLearningCtxActions();
+  const { learnedWords } = useAppStateContext();
 
-  const getLearntWords = useCallback(async (): Promise<string[]> => {
-    const result = await get<string[]>(`learned-words`);
+  const initLearnedWords = useCallback(async (): Promise<any> => {
+    const result = await getArray<string>(`learned-words`);
     if (result.isError() || !result.data) {
       throw result;
     }
-    return result.data ?? [];
-  }, [get]);
+    const words = (result.data ?? []).reduce((prev, w) => {
+      prev[w] = true;
+      return prev;
+    }, {} as { [key: string]: true });
+    setLearnedWords(words);
+  }, [getArray, setLearnedWords]);
 
-  const getWordsToLearn = useCallback(async (): Promise<string[]> => {
-    const result = await get<string[]>(`words-to-learn`);
+  const initWordsToLearn = useCallback(async (): Promise<any> => {
+    const result = await getArray<string>(`words-to-learn`);
     if (result.isError() || !result.data) {
       throw result;
     }
-    return result.data;
-  }, [get]);
+    setWordsToLearn(result.data);
+  }, [getArray, setWordsToLearn]);
 
   const addSrtRecord = useCallback(
     async (name: string, content: string): Promise<Record> => {
@@ -48,9 +57,50 @@ export const useWordFunctions = () => {
     [set]
   );
 
+  const addLearnedWord = useCallback(
+    async (word: string): Promise<any> => {
+      const result = await set(
+        `learned-words/${(Object.keys(learnedWords).length || 1) - 1}`,
+        word
+      );
+      if (result.isError()) {
+        throw result;
+      }
+
+      setLearnedWords({
+        ...learnedWords,
+        [word]: true,
+      });
+    },
+    [learnedWords, set, setLearnedWords]
+  );
+
+  const removeLearnedWord = useCallback(
+    async (word: string): Promise<any> => {
+      const wordIndex = Object.keys(learnedWords).indexOf(word);
+      if (wordIndex < 0) {
+        throw new AppGenericError("Word is not learned actually.");
+      }
+
+      const result = await remove(`learned-words/${wordIndex}`);
+      if (result.isError()) {
+        throw result;
+      }
+
+      const newLearnedWords = {
+        ...learnedWords,
+      };
+      delete newLearnedWords[word];
+      setLearnedWords(newLearnedWords);
+    },
+    [learnedWords, remove, setLearnedWords]
+  );
+
   return {
-    getLearntWords,
-    getWordsToLearn,
+    initLearnedWords,
+    initWordsToLearn,
     addSrtRecord,
+    addLearnedWord,
+    removeLearnedWord,
   };
 };

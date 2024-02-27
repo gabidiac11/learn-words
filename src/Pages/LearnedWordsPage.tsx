@@ -2,8 +2,10 @@ import { Typography } from "@mui/material";
 import { useAppStateContext } from "../app-context/useAppState";
 
 export const LearnedWordsPage = () => {
-  const { learnedWords } = useAppStateContext();
+  const { learnedWords: learnWordsObj } = useAppStateContext();
+  const learnedWords = Object.keys(learnWordsObj);
 
+  // TODO: add pagination, option to remove
   return (
     <div className="view page-wrapper">
       <Typography

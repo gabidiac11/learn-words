@@ -12,11 +12,11 @@ import "./auth.scss";
 import { useFetchPromise } from "../hooks/useFetchData";
 import { useOnEnter } from "../utils";
 import { FetchError, FetchFirebaseError } from "../hooks/error-types";
-import { useSnackActions } from "../app-context/useSnackActions";
+import { useUIFeedback } from "../app-context/useUIFeedback";
 
 const Login = () => {
   const { executeFetch, loading, error } = useFetchPromise<UserCredential>();
-  const { displayError } = useSnackActions();
+  const { displayError } = useUIFeedback();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

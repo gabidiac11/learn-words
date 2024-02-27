@@ -3,7 +3,7 @@ import { Snack, StateActionType } from "./types";
 import { useAppDispatch } from "./useAppDispatch";
 import { uuidv4 } from "@firebase/util";
 
-export const useSnackActions = () => {
+export const useUIFeedback = () => {
   const { dispatch } = useAppDispatch();
 
   const addSnack = useCallback(

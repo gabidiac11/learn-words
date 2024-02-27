@@ -10,6 +10,9 @@ import Header from "./components/Header";
 import { LearnedWordsPage } from "./pages/LearnedWordsPage";
 import { WordsToLearnPage } from "./pages/WordsToLearnPage";
 import { routes as r } from "./routes";
+import { WithInitialization } from "./components/WithInitialization";
+import { ErrorBoundary } from "react-error-boundary";
+import { ErrorBoundaryFallback } from "./components/ErrorBoundary/ErrorBoundaryFallback";
 
 function App() {
   const { user, isVerifying } = useAuthInit();
@@ -18,39 +21,41 @@ function App() {
     return <LoaderView />;
   }
   return (
-    <BrowserRouter>
-      <div className="main">
-        {user ? (
-          <>
-            <Header />
+    <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
+      <BrowserRouter>
+        <div className="main">
+          {user ? (
+            <WithInitialization>
+              <Header />
+              <Routes>
+                <Route path={r.Home.path} element={<Home />} />
+                <Route
+                  path={r.LearnedWords.path}
+                  element={<LearnedWordsPage />}
+                />
+                <Route
+                  path={r.WordsToLearn.path}
+                  element={<WordsToLearnPage />}
+                />
+                <Route path={r.File.path} element={<UploadFilePage />} />
+                <Route
+                  path="*"
+                  element={<DefaultRouteRedirection isAuth={isAuth} />}
+                />
+              </Routes>
+            </WithInitialization>
+          ) : (
             <Routes>
-              <Route path={r.Home.path} element={<Home />} />
-              <Route
-                path={r.LearnedWords.path}
-                element={<LearnedWordsPage />}
-              />
-              <Route
-                path={r.WordsToLearn.path}
-                element={<WordsToLearnPage />}
-              />
-              <Route path={r.File.path} element={<UploadFilePage />} />
+              <Route path={r.Login.path} element={<Login />} />
               <Route
                 path="*"
                 element={<DefaultRouteRedirection isAuth={isAuth} />}
               />
             </Routes>
-          </>
-        ) : (
-          <Routes>
-            <Route path={r.Login.path} element={<Login />} />
-            <Route
-              path="*"
-              element={<DefaultRouteRedirection isAuth={isAuth} />}
-            />
-          </Routes>
-        )}
-      </div>
-    </BrowserRouter>
+          )}
+        </div>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 
