@@ -3,9 +3,9 @@ import { AppGenericError } from "./types";
 
 export const useFileFunctions = () => {
   const extractWords = useCallback((content: string): [string, number][] => {
-    // eslint-disable-next-line no-useless-escape
     const words = content
-      .split(
+    .split(
+        // eslint-disable-next-line no-useless-escape
         /[\#\$\%\^\&\*_\+\~@\!\?\.,\/\^\*;:{}=\-_`~()“”‘’'"\[\]\->:,\s\n\r\d\0]+/i
       )
       .filter((i) => !!i)

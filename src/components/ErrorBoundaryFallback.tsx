@@ -1,5 +1,5 @@
-import { Box, Typography } from "@mui/material";
-import { getErrorMessage } from "../../utils";
+import { Typography } from "@mui/material";
+import { getErrorMessage } from "../utils";
 
 export const ErrorBoundaryFallback = ({ error }: { error: unknown }) => {
   return (
