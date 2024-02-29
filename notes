@@ -1,14 +1,15 @@
-- text are with things
-- upload file
-- upload srt file
-- add a url to a html page (articles) and highlight unknown words
-- download srt files with styling on unknown words 
+Run words splitting from:
+- text area
+- upload file / srt file
+- add a url to a html page articles (maybe do a page with displayed article and highlight unknown words)
 
+Other ideas:
+- download srt files with styling of unknown words
+- add page with option to search records by grup of words to learn (ordered by number of occurences of words)
 - page with known word (to remove from list)
-
-- parseaza din genius link/album
+- add option to parse html from genius: link/album and lyricstranslate
+    
+Lyrics / text to add:
     -> husky album
-- links din lyrics translate 
-    -> zoya yashchenko
-
-- cauta dupa un grup de cuvinte necunoscute
+    -> Tamara's video
+    -> srt from movies/series you known
