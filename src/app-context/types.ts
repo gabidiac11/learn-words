@@ -6,17 +6,22 @@ export type Snack = {
   severity: "error" | "success" | "info" | "warning";
   onClose?: () => void;
 };
+
+export type Uuid = string;
+
+export type Words = { [key: string]: Uuid };
+
 export type State = {
   snack: Snack | null;
-  learnedWords: { [key: string]: true };
-  wordsToLearn: string[];
+  learnedWords: Words;
+  wordsToLearn: Words;
 };
 
 export enum StateActionType {
   Init = "Init",
   PushSnack = "PushSnack",
   RemoveSnack = "RemoveSnack",
-  SetKnownWords = "SetKnownWords",
+  SetLearnedWords = "SetLearnedWords",
   SetWordsToLearn = "SetWordsToLearn",
 }
 
@@ -35,14 +40,14 @@ export type StateAction =
       };
     }
   | {
-      type: StateActionType.SetKnownWords;
+      type: StateActionType.SetLearnedWords;
       payload: {
-        words: { [key: string]: true };
+        words: Words;
       };
     }
   | {
       type: StateActionType.SetWordsToLearn;
       payload: {
-        words: string[];
+        words: Words;
       };
     };

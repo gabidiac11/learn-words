@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { StateActionType } from "./types";
+import { Words, StateActionType, Uuid } from "./types";
 import { useAppDispatch } from "./useAppDispatch";
 import { useAppStateContext } from "./useAppState";
 
@@ -7,10 +7,10 @@ export const useLearningCtxActions = () => {
   const { dispatch } = useAppDispatch();
   const { learnedWords } = useAppStateContext();
 
-  const setLearnWords = useCallback(
-    (words: { [key: string]: true }) => {
+  const setLearnedWords = useCallback(
+    (words: Words) => {
       dispatch({
-        type: StateActionType.SetKnownWords,
+        type: StateActionType.SetLearnedWords,
         payload: {
           words,
         },
@@ -20,7 +20,7 @@ export const useLearningCtxActions = () => {
   );
 
   const setWordsToLearn = useCallback(
-    (words: string[]) => {
+    (words: Words) => {
       dispatch({
         type: StateActionType.SetWordsToLearn,
         payload: {
@@ -32,13 +32,13 @@ export const useLearningCtxActions = () => {
   );
 
   const addLearnedWord = useCallback(
-    async (word: string) => {
-      const words: { [key: string]: true } = {
+    async (word: string, uid: Uuid) => {
+      const words: Words = {
         ...learnedWords,
-        [word]: true,
+        [word]: uid,
       };
       dispatch({
-        type: StateActionType.SetKnownWords,
+        type: StateActionType.SetLearnedWords,
         payload: {
           words,
         },
@@ -54,7 +54,7 @@ export const useLearningCtxActions = () => {
       };
       delete words[word];
       dispatch({
-        type: StateActionType.SetKnownWords,
+        type: StateActionType.SetLearnedWords,
         payload: {
           words,
         },
@@ -64,7 +64,7 @@ export const useLearningCtxActions = () => {
   );
 
   return {
-    setLearnedWords: setLearnWords,
+    setLearnedWords,
     setWordsToLearn,
     addLearnedWord,
     removeWordToLearn,

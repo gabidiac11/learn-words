@@ -1,5 +1,6 @@
 .paginated-words {
-    margin: 20px;
+  margin: 20px;
+
   .word-items {
     display: flex;
     flex-wrap: wrap;
@@ -8,19 +9,81 @@
     justify-content: center;
   }
 
-  .word-item {
+  .word-item-container {
+    flex: 1;
+    display: flex;
     padding: 10px;
-    border: 1px solid black;
-    margin: 10px;
+  }
+
+  .word-item {
+    display: flex;
+    border-radius: 10px;
+  }
+
+  .word-square:hover {
+    svg {
+      fill: black;
+    }
+  }
+
+  .word-square {
+    padding: 0.5rem 0.3rem 0.5rem 0.5rem;
+    border-radius: 10px;
     cursor: pointer;
   }
-  
-  .word-item:hover {
-    background-color: rgba(0,0,0,0.09);
+  .word-square:hover {
+    background-color: rgba(0, 0, 0, 0.09);
+  }
+
+  .word-typography {
+    white-space: nowrap;
+    font-weight: 500;
+    font-size: 1.25rem;
+    line-height: 1.6;
+    letter-spacing: 0.0075em;
+  }
+
+  .btn-word-add {
+    background-color: transparent;
+    border-radius: 0;
+    padding: 0.5rem 0.1rem;
+    display: block;
+    color: inherit;
+    border: none;
+    cursor: pointer;
+    outline: inherit;
+    svg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+  .btn-action {
+    svg {
+      fill: rgb(165, 165, 165);
+    }
+  }
+  .btn-action:hover {
+    svg {
+      fill: black;
+    }
+  }
+  .btn-action.btn-active {
+    svg {
+      fill: rgb(143, 0, 0);
+    }
+  }
+  .btn-action.btn-active:hover:not(:disabled) {
+    svg {
+      fill: rgb(87, 2, 2);
+    }
+  }
+
+  .checkbox-display-learned {
+    padding: 0 1.5rem;
   }
 }
 
 .paginated-words.is-focused {
-    outline: 3px solid red!important;
-    outline-offset: 2px!important;;
+  outline: 3px solid red !important;
+  outline-offset: 2px !important;
 }

@@ -15,10 +15,15 @@ export const mainReducer = (state: State, action: StateAction): State => {
         ...state,
         snack: null,
       };
-    case StateActionType.SetKnownWords:
+    case StateActionType.SetLearnedWords:
       return {
         ...state,
         learnedWords: action.payload.words,
+      };
+    case StateActionType.SetWordsToLearn:
+      return {
+        ...state,
+        wordsToLearn: action.payload.words,
       };
     default:
       return state;

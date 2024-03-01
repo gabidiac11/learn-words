@@ -2,8 +2,9 @@ import { Typography } from "@mui/material";
 import { useAppStateContext } from "../app-context/useAppState";
 
 export const WordsToLearnPage = () => {
-  const { wordsToLearn } = useAppStateContext();
-
+  const { wordsToLearn: wordsToLearnObj } = useAppStateContext();
+  const wordsToLearn = Object.keys(wordsToLearnObj);
+  
   return (
     <div className="view page-wrapper">
       <Typography

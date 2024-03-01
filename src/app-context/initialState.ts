@@ -3,5 +3,5 @@ import { State } from "./types";
 export default {
     snack: null,
     learnedWords: {},
-    wordsToLearn: [],
+    wordsToLearn: {},
 } as State;

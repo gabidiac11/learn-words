@@ -21,7 +21,7 @@ export const useDatabase = () => {
 
   const decoratedPath = useCallback(
     (requestedPath: string) => {
-      return `${dbRootPathKey}/user-${userId}/${requestedPath}`.replace(
+      return `${dbRootPathKey}/user/${userId}/${requestedPath}`.replace(
         "//",
         "/"
       );
