@@ -13,9 +13,11 @@ export default function AppSelect<T>({
   value,
   label,
   options,
+  className,
   handleChange,
 }: {
   label: string;
+  className: string;
   value: T;
   options: Option<T>[];
   handleChange: (event: SelectChangeEvent) => void;
@@ -23,7 +25,7 @@ export default function AppSelect<T>({
   const id = useRef(uuidv4());
 
   return (
-    <div className="mgl-15">
+    <div className={`mgl-15 ${className ?? ""}`}>
       <FormControl sx={{ m: 1, minWidth: 80 }}>
         <InputLabel id={id.current}>{label}</InputLabel>
         <Select
@@ -32,6 +34,7 @@ export default function AppSelect<T>({
           value={String(value)}
           onChange={handleChange}
           autoWidth
+          size="small"
           label={label}
         >
           {options.map((option, i) => (

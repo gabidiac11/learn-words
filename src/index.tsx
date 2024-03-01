@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.scss';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import "./window";
 import "./firebase";
 import { AppContextProvider } from './app-context/AppContext';
 import { AppSnackbar } from './components/AppSnackbar';

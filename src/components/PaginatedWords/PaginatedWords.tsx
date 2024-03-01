@@ -5,8 +5,7 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Pagination from "@mui/material/Pagination";
-import { useRefState } from "../../hooks/useRefState";
+import Pagination, { PaginationProps } from "@mui/material/Pagination";
 import "./PaginatedWords.scss";
 import AppSelect from "../AppSelect";
 import { uuidv4 } from "@firebase/util";
@@ -16,6 +15,8 @@ import { getErrorMessage } from "../../utils";
 import { useUIFeedback } from "../../app-context/useUIFeedback";
 import { StarBorder, Star, Check as CheckIcon } from "@mui/icons-material";
 import { Words } from "../../app-context/types";
+import { useIsElementInView } from "../../hooks/useIsElementInView";
+import { useIsElementFocused } from "../../hooks/useIsElementFocused";
 
 const pageOptions = [20, 50, 100, 150, 200, 250, 500, 1000, 1200, 1500].map(
   (value) => ({ value })
@@ -36,8 +37,12 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
   } = useWordFunctions();
   const { displayError } = useUIFeedback();
 
-  const [isFocused, setIsFocused] = useRefState<boolean>(false);
   const refContainer = useRef<HTMLDivElement>(null);
+  const isContainerInView = useIsElementInView(refContainer.current);
+  const refPagination = useRef<HTMLDivElement>(null);
+  const isPagInView = useIsElementInView(refPagination.current);
+
+  const isFocused = useIsElementFocused(refContainer.current);
   const [showLearned, setShowLearned] = useState(false);
   const [sessionLearned, setSessionLearned] = useState<Words>({});
 
@@ -77,8 +82,6 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
   const numOfPages = useMemo(() => {
     return Math.ceil(filteredWords.length / pagination.pageSize);
   }, [filteredWords.length, pagination.pageSize]);
-
-  console.log({ startIndex, endIndex, numOfPages });
 
   const onToggleLearnedWords = useCallback(
     async (word: string) => {
@@ -148,22 +151,16 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
     []
   );
 
-  useEffect(() => {
-    const onClick = (e: MouseEvent) => {
-      setIsFocused(
-        !!e.target &&
-          (refContainer.current === e.target ||
-            (refContainer.current?.contains(
-              e.target as unknown as HTMLElement
-            ) ??
-              false))
-      );
-    };
-    window.addEventListener("click", onClick);
-    return () => {
-      window.removeEventListener("click", onClick);
-    };
-  }, [setIsFocused]);
+  const scrollToThis = useCallback(() => {
+    window.scrEl().scrollTo({
+      behavior: "smooth",
+      top:
+        (refContainer.current?.getBoundingClientRect().top ??
+          -window.scrEl().scrollTop) +
+        window.scrEl().scrollTop -
+        10,
+    });
+  }, []);
 
   useEffect(() => {
     const onArrows = (e: KeyboardEvent) => {
@@ -189,10 +186,24 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
       key: uuidv4(),
     }));
   }, [words]);
+ 
+  useEffect(() => {
+    scrollToThis();
+  }, [scrollToThis])
 
   // TODO: make filters and pagination sticky while this is into view
   // TODO: get a ux friendly way to add words to learn list (global) or on the record level
   // TODO: implement swipe left-right
+
+  const paginationProps: PaginationProps = {
+    size: "large",
+    className: "pagination",
+    count: numOfPages,
+    siblingCount: 0,
+    boundaryCount: 1,
+    page: pagination.page,
+    onChange: onChangePage,
+  };
 
   return (
     <div
@@ -200,31 +211,29 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
       ref={refContainer}
     >
       <div className="word-list-header flex-row flex-align-center">
+        <Box className="totals-info">
+          Total: {words.length} | Learned: {numOfLearned} | Unknown:{" "}
+          {numOfUnknown}{" "}
+        </Box>
+      </div>
+      <div className="word-header-pagination">
         <AppSelect
+          className="pagination-size"
           label="Page size"
           value={pagination.pageSize}
           handleChange={onChangePageSize}
           options={pageOptions}
         />
-        <Pagination
-          key={pagination.key}
-          count={numOfPages}
-          siblingCount={0}
-          boundaryCount={1}
-          page={pagination.page}
-          onChange={onChangePage}
-        />
-        <Box>
-          Total: {words.length} | Learned: {numOfLearned} | Unknown:{" "}
-          {numOfUnknown}{" "}
-        </Box>
         <FormControlLabel
           className="checkbox-display-learned"
           defaultChecked={showLearned}
           onChange={onChangeDisplayLearned}
           control={<Checkbox />}
-          label="Display learned words"
+          label="Learned words"
         />
+        <div ref={refPagination}>
+          <Pagination {...paginationProps} key={pagination.key} />
+        </div>
       </div>
       <div className="word-items">
         {filteredWords.map(([w, count], i) => {
@@ -277,6 +286,20 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
           );
         })}
       </div>
+      {isContainerInView && !isPagInView && (
+        <div className="pagination-sticky">
+          <div className="pagination-sticky-inner">
+            <Pagination
+              {...paginationProps}
+              onChange={(e, page) => {
+                scrollToThis();
+                paginationProps.onChange && paginationProps.onChange(e, page);
+              }}
+              key={pagination.key}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

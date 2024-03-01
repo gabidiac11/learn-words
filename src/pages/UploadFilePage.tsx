@@ -1,4 +1,3 @@
-import { Typography } from "@mui/material";
 import { useCallback, useState } from "react";
 import { useUIFeedback } from "../app-context/useUIFeedback";
 import { useFileFunctions } from "../core/useFileFunctions";
@@ -47,19 +46,15 @@ export const UploadFilePage = () => {
         <FileInput onChange={onChange} />
         {wordState && <PaginatedWords words={wordState.words} />}
         {wordState && (
-          <div>
-            <Typography
-              variant="caption"
-              noWrap
-              tabIndex={0}
-              component="div"
-              sx={{
-                display: { xs: "none", sm: "block" },
-                "white-space": "break-spaces",
-              }}
-            >
-              {wordState.content}
-            </Typography>
+          <div
+            style={{
+              padding: "20px",
+              maxWidth: "calc(100vw - calc(var(--page-padding-h) * 2))",
+              overflowX: "auto",
+              border: "1px solid rgba(0,0,0,0.2)",
+            }}
+          >
+            <pre>{wordState.content}</pre>
           </div>
         )}
       </div>

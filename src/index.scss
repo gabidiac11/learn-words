@@ -1,4 +1,5 @@
 body {
+  --page-padding-h: 30px;
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -202,7 +203,7 @@ button {
 }
 
 .page-wrapper {
-  padding: 50px 30px;
+  padding: 50px var(--page-padding-h);
   display: flex;
   flex-wrap: nowrap;
   flex-direction: column;
