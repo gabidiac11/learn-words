@@ -1,6 +1,9 @@
 import { uuidv4 } from "@firebase/util";
 import { useCallback } from "react";
-import { Uuid, Words } from "../app-context/types";
+import {
+  Uuid,
+  Words,
+} from "../app-context/types";
 import { useAppStateContext } from "../app-context/useAppState";
 import { useLearningCtxActions } from "../app-context/useLearningCtxActions";
 import { Record, RecordType } from "../model.types";
@@ -12,6 +15,11 @@ const toWords = (data?: { [key: Uuid]: string }) =>
     return prev;
   }, {} as Words);
 
+const generateRecordId = (name: string) => `${name
+  .slice(0, 20)
+  // eslint-disable-next-line no-useless-escape
+  .replace(/[\.\#\$\/\[\]\s]/g, "_")}-${uuidv4()}`;
+
 export const useWordFunctions = () => {
   const { get, set, remove } = useDatabase();
   const { setLearnedWords, setWordsToLearn } = useLearningCtxActions();
@@ -19,55 +27,100 @@ export const useWordFunctions = () => {
 
   const initLearnedWords = useCallback(async (): Promise<any> => {
     const result = await get<{ [key: Uuid]: string }>(`learned-words`);
-    if (result.isError()) {
-      throw result;
-    }
+    result.throwIfError("Could not get learned words");
+
     setLearnedWords(toWords(result.data));
   }, [get, setLearnedWords]);
 
   const initWordsToLearn = useCallback(async (): Promise<any> => {
     const result = await get<{ [key: Uuid]: string }>(`words-to-learn`);
-    if (result.isError()) {
-      throw result;
-    }
+    result.throwIfError("Could not get words to learn");
+
     setWordsToLearn(toWords(result.data));
   }, [get, setWordsToLearn]);
 
-  const addSrtRecord = useCallback(
-    async (name: string, content: string): Promise<Record> => {
-      const key = `${name
-        .slice(0, 20)
-        // eslint-disable-next-line no-useless-escape
-        .replace(/[\.\#\$\/\[\]\s]/g, "_")}-${uuidv4()}`;
-      // const result = await set(`records/${key}`, {
-      //   type: RecordType.Srt,
-      //   name,
-      //   content,
-      // });
-      // if (result.isError()) {
-      //   throw result;
-      // }
+  // const addRecordWordsToLearn = useCallback(
+  //   async (recordId: string, words: [string, number][]) => {
+  //     const wWordsToLearnRecord = Object.entries(wordsToLearn).reduce(
+  //       (acc, [wToLearn, wordToLearnId]) => {
+  //         const found = words.find(([w]) => w === wToLearn);
+  //         if (!found) return acc;
+
+  //         const [, occurences] = found;
+  //         acc[wordToLearnId] = {
+  //           [recordId]: occurences,
+  //         };
+  //         return acc;
+  //       },
+  //       {} as RecordWordsToLearn
+  //     );
+
+  //     (
+  //       await update("words-to-learn-records", wWordsToLearnRecord)
+  //     ).throwIfError("Could not add words to learn from this record");
+  //   },
+  //   [update, wordsToLearn]
+  // );
+
+  // const removeRecordWordsToLearn = useCallback(
+  //   async (recordId: string, words: [string, number][]) => {
+  //     const wWordsToLearnRecord = Object.entries(wordsToLearn).reduce(
+  //       (acc, [wToLearn, wordToLearnId]) => {
+  //         const found = words.find(([w]) => w === wToLearn);
+  //         if (!found) return acc;
+
+  //         acc[wordToLearnId] = {
+  //           [recordId]: null,
+  //         };
+  //         return acc;
+  //       },
+  //       {} as RecordWordsToLearnRemove
+  //     );
+
+  //     (
+  //       await update("words-to-learn-records", wWordsToLearnRecord)
+  //     ).throwIfError("Could not remove words to learn from this record");
+  //   },
+  //   [update, wordsToLearn]
+  // );
+
+  const addFileRecord = useCallback(
+    async (
+      name: string,
+      content: string
+    ): Promise<Record> => {
+      const recordId = generateRecordId(name);
+      const result = await set(`records/${recordId}`, {
+        type: RecordType.Srt,
+        name,
+        content,
+      });
+      result.throwIfError("Could not add record");
 
       return {
-        key,
+        id: recordId,
         name,
         content,
         type: RecordType.Srt,
         wordsToLearn: {},
       };
     },
-    [
-      // set
-    ]
+    [set]
+  );
+
+  const removeRecord = useCallback(
+    async (recordId: string): Promise<any> => {
+      const result = await remove(`records/${recordId}`);
+      result.throwIfError("Could not remove record");
+    },
+    [remove]
   );
 
   const addLearnedWord = useCallback(
     async (word: string): Promise<any> => {
       const id = uuidv4();
       const result = await set(`learned-words/${id}`, word);
-      if (result.isError()) {
-        throw result;
-      }
+      result.throwIfError(`Could not add '${word}' to learned words`);
 
       setLearnedWords({
         ...learnedWords,
@@ -81,9 +134,7 @@ export const useWordFunctions = () => {
   const removeLearnedWord = useCallback(
     async (word: string, id: string): Promise<any> => {
       const result = await remove(`learned-words/${id}`);
-      if (result.isError()) {
-        throw result;
-      }
+      result.throwIfError(`Could not remove '${word}' from learned words`);
 
       const learnedWordsUpdated = {
         ...learnedWords,
@@ -97,10 +148,9 @@ export const useWordFunctions = () => {
   const addWordToLearningList = useCallback(
     async (word: string): Promise<any> => {
       const id = uuidv4();
-      const resultGlob = await set(`words-to-learn/${id}`, word);
-      if (resultGlob.isError()) {
-        throw resultGlob;
-      }
+      const result = await set(`words-to-learn/${id}`, word);
+      result.throwIfError(`Could not add '${word}' to words to learn`);
+
       setWordsToLearn({
         ...wordsToLearn,
         [word]: id,
@@ -125,10 +175,14 @@ export const useWordFunctions = () => {
   return {
     initLearnedWords,
     initWordsToLearn,
-    addSrtRecord,
+    
+    addFileRecord,
+    removeRecord,
+
     addLearnedWord,
     removeLearnedWord,
+    
     addWordToLearningList,
-    removeWordFromLearningList
+    removeWordFromLearningList,
   };
 };

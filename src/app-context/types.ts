@@ -11,6 +11,12 @@ export type Uuid = string;
 
 export type Words = { [key: string]: Uuid };
 
+export type RecordWordsToLearn = {
+  [wordToLearnId: string]: {
+    [recordId: string]: number;
+  };
+};
+
 export type State = {
   snack: Snack | null;
   learnedWords: Words;

@@ -16,6 +16,13 @@ export const getErrorMessage = (error: unknown): string => {
     return error;
   }
 
+  if (Array.isArray(error)) {
+    return (
+      error?.map((value) => getErrorMessage(value)).join(". ") ??
+      "Something went wrong."
+    );
+  }
+
   const errorAsGeneric = error as AppGenericError;
   if (errorAsGeneric?.isAppGenericError) {
     return errorAsGeneric.message;
@@ -25,13 +32,6 @@ export const getErrorMessage = (error: unknown): string => {
   if (errorAsResult?.isAppResult) {
     return (
       errorAsResult.errors?.map((value) => value.message).join(". ") ??
-      "Something went wrong."
-    );
-  }
-
-  if (Array.isArray(error)) {
-    return (
-      error?.map((value) => getErrorMessage(value)).join(". ") ??
       "Something went wrong."
     );
   }

@@ -3,6 +3,8 @@ import Button from "@mui/joy/Button";
 import SvgIcon from "@mui/joy/SvgIcon";
 import { styled } from "@mui/joy";
 import { ChangeEvent, useCallback, useState } from "react";
+import { DeleteRounded as ClearIcon } from "@mui/icons-material";
+import { uuidv4 } from "@firebase/util";
 
 const VisuallyHiddenInput = styled("input")`
   clip: rect(0 0 0 0);
@@ -20,12 +22,16 @@ const maxDisplay = 50;
 
 export const FileInput = (props: {
   onChange: (e: File) => Promise<unknown>;
+  onRemove: () => void;
 }) => {
-  const [fileName, setFileName] = useState<string>();
+  const [fileName, setFileName] = useState<string | null>();
+  const [inputKey, setInputKey] = useState(uuidv4());
+
   const { displayError } = useUIFeedback();
 
   const onChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
+      console.log("change", e);
       const file = e.target.files?.[0];
       if (!file) {
         displayError("No file selected.");
@@ -45,10 +51,19 @@ export const FileInput = (props: {
     [displayError, props]
   );
 
-  // TODO: add "x" button
+  const onRemove = useCallback(() => {
+    if (!fileName) {
+      displayError("No file selected.");
+      return;
+    }
+
+    setFileName(null);
+    setInputKey(uuidv4());
+    props.onRemove();
+  }, [displayError, fileName, props]);
 
   return (
-    <div className="file-input">
+    <div className="flex file-input">
       <Button
         component="label"
         role={undefined}
@@ -75,8 +90,13 @@ export const FileInput = (props: {
       >
         {!fileName && "Upload a file"}
         {!!fileName && fileName}
-        <VisuallyHiddenInput type="file" onChange={onChange} />
+        <VisuallyHiddenInput key={inputKey} type="file" onChange={onChange} />
       </Button>
+      {!!fileName && (
+        <button className="btn-svg ml-10" onClick={onRemove}>
+          <ClearIcon />
+        </button>
+      )}
     </div>
   );
 };

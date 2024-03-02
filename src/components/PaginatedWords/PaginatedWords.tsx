@@ -18,14 +18,14 @@ import { Words } from "../../app-context/types";
 import { useIsElementInView } from "../../hooks/useIsElementInView";
 import { useIsElementFocused } from "../../hooks/useIsElementFocused";
 
-const pageOptions = [20, 50, 100, 150, 200, 250, 500, 1000, 1200, 1500].map(
+const pageOptions = [25, 50, 100, 150, 200, 250, 500, 1000, 1200, 1500].map(
   (value) => ({ value })
 );
 
 export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
   const [pagination, setPagination] = useState({
     page: 1,
-    pageSize: 20,
+    pageSize: 100,
     key: uuidv4(),
   });
   const { learnedWords, wordsToLearn } = useAppStateContext();
@@ -186,10 +186,10 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
       key: uuidv4(),
     }));
   }, [words]);
- 
+
   useEffect(() => {
     scrollToThis();
-  }, [scrollToThis])
+  }, [scrollToThis]);
 
   // TODO: make filters and pagination sticky while this is into view
   // TODO: get a ux friendly way to add words to learn list (global) or on the record level
@@ -206,11 +206,8 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
   };
 
   return (
-    <div
-      className={`paginated-words ${isFocused ? "is-focused" : ""}`}
-      ref={refContainer}
-    >
-      <div className="word-list-header flex-row flex-align-center">
+    <div className="paginated-words" ref={refContainer}>
+      <div className="flex-row flex-align-center word-list-header">
         <Box className="totals-info">
           Total: {words.length} | Learned: {numOfLearned} | Unknown:{" "}
           {numOfUnknown}{" "}

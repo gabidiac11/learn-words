@@ -25,7 +25,7 @@ export default function AppSelect<T>({
   const id = useRef(uuidv4());
 
   return (
-    <div className={`mgl-15 ${className ?? ""}`}>
+    <div className={`${className ?? ""}`}>
       <FormControl sx={{ m: 1, minWidth: 80 }}>
         <InputLabel id={id.current}>{label}</InputLabel>
         <Select

@@ -8,7 +8,7 @@ export enum RecordType {
 }
 
 export type Record = {
-  key: string;
+  id: string;
   name: string;
   wordsToLearn: Words;
 } & (

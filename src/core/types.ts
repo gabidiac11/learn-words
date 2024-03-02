@@ -27,6 +27,20 @@ export default class Result<T> {
     return !!this.errors;
   }
 
+  public throwIfError(preMessage?: string) {
+    if (!this.isError()) {
+      return;
+    }
+    if (!preMessage) {
+      // eslint-disable-next-line no-throw-literal
+      throw this;
+    }
+
+    this.errors = [new AppGenericError(preMessage), ...(this.errors ?? [])];
+    // eslint-disable-next-line no-throw-literal
+    throw this;
+  }
+
   public static Error<T>(message: AppGenericError) {
     const result = new Result<T>();
     result.errors = [message];
@@ -61,3 +75,9 @@ export default class Result<T> {
     return resultNew;
   }
 }
+
+export type RecordWordsToLearnRemove = {
+  [wordToLearnId: string]: {
+    [recordId: string]: null;
+  };
+};

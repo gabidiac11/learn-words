@@ -3,6 +3,7 @@ import firebaseApp from "../firebase";
 import {
   get as firebaseGet,
   set as firebaseSet,
+  update as firebaseUpdate,
   remove as firebaseRemove,
 } from "@firebase/database";
 import Result, { AppGenericError } from "./types";
@@ -40,7 +41,7 @@ export const useDatabase = () => {
         return Result.Success(value);
       } catch (error) {
         log(
-          `[db]: error occured at path '${decoratedPath(path)}'`,
+          `[DB_GET]: error occured at path '${decoratedPath(path)}'`,
           getStringifiedError(error)
         );
         return Result.Error(
@@ -91,7 +92,7 @@ export const useDatabase = () => {
         return Result.Success(null);
       } catch (error) {
         log(
-          `[db]: error occured at path '${decoratedPath(path)}'`,
+          `[DB_SET]: error occured at path '${decoratedPath(path)}'`,
           getStringifiedError(error)
         );
         return Result.Error(
@@ -100,6 +101,33 @@ export const useDatabase = () => {
       } finally {
         log(
           `DB_SET: '${decoratedPath(path)}': [FINISHED] at ${
+            (Date.now() - time) / 1000
+          }s\n`
+        );
+      }
+    },
+    [db, decoratedPath]
+  );
+
+  const update = useCallback(
+    async (path: string, item: object) => {
+      removeUndefined(item);
+      const time = Date.now();
+      log(`\nDB_UPDATE: '${decoratedPath(path)}': [STARTED]`);
+      try {
+        await firebaseUpdate(ref(db, decoratedPath(path)), item);
+        return Result.Success(null);
+      } catch (error) {
+        log(
+          `[DB_UPDATE]: error occured at path '${decoratedPath(path)}'`,
+          getStringifiedError(error)
+        );
+        return Result.Error(
+          new AppGenericError("Something went wrong.", error)
+        );
+      } finally {
+        log(
+          `DB_UPDATE: '${decoratedPath(path)}': [FINISHED] at ${
             (Date.now() - time) / 1000
           }s\n`
         );
@@ -117,7 +145,7 @@ export const useDatabase = () => {
         return Result.Success(null);
       } catch (error) {
         log(
-          `[db]: error occured at path '${decoratedPath(path)}'`,
+          `[DB_REMOVE]: error occured at path '${decoratedPath(path)}'`,
           getStringifiedError(error)
         );
         return Result.Error(
@@ -137,7 +165,7 @@ export const useDatabase = () => {
   const exists = useCallback(
     async (path: string): Promise<Result<boolean>> => {
       try {
-        log(`[db-exists]: at path ${decoratedPath(path)}`);
+        log(`[DB_EXISTS]: at path ${decoratedPath(path)}`);
 
         const snapshot = await firebaseGet(ref(db, decoratedPath(path)));
         if (!snapshot.exists()) {
@@ -145,7 +173,7 @@ export const useDatabase = () => {
         }
         return Result.Success(true);
       } catch (error) {
-        log(`[db-exists]: error occured`, error);
+        log(`[DB_EXISTS]: error occured`, error);
         return Result.Error(
           new AppGenericError("Something went wrong.", error)
         );
@@ -158,6 +186,7 @@ export const useDatabase = () => {
     get,
     getArray,
     set,
+    update,
     remove,
     exists,
   };
