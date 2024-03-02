@@ -81,3 +81,8 @@ export type RecordWordsToLearnRemove = {
     [recordId: string]: null;
   };
 };
+
+export type ContentSection = {
+  content: string;
+  isLearned: boolean;
+}

@@ -1,15 +1,16 @@
 import { useCallback, useState } from "react";
 import { useUIFeedback } from "../app-context/useUIFeedback";
-import { useFileFunctions } from "../core/useFileFunctions";
+import { useWordContentFunctions } from "../core/useWordContentFunctions";
 import { useWordFunctions } from "../core/useWordFunctions";
 import { Record } from "../model.types";
 import { getErrorMessage } from "../utils";
 import { PaginatedWords } from "../components/PaginatedWords/PaginatedWords";
 import { FileInput } from "../components/FileInput";
+import { RecordContent } from "../components/RecordContent/RecordContent";
 
 export const UploadFilePage = () => {
   const { displayError } = useUIFeedback();
-  const { extractWords, readFile } = useFileFunctions();
+  const { extractWords, readFile } = useWordContentFunctions();
   const { addFileRecord, removeRecord } = useWordFunctions();
 
   const [wordState, setWordState] = useState<{
@@ -57,18 +58,7 @@ export const UploadFilePage = () => {
       <div className="view-content">
         <FileInput onChange={onChange} onRemove={onRemoveRecord} />
         {wordState && <PaginatedWords words={wordState.words} />}
-        {wordState && (
-          <div
-            style={{
-              padding: "20px",
-              maxWidth: "calc(100vw - calc(var(--page-padding-h) * 2))",
-              overflowX: "auto",
-              border: "1px solid rgba(0,0,0,0.2)",
-            }}
-          >
-            <pre>{wordState.content}</pre>
-          </div>
-        )}
+        {wordState && <RecordContent key={wordState.record.id} content={wordState.content} />}
       </div>
     </div>
   );

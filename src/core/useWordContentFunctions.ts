@@ -1,10 +1,11 @@
 import { useCallback } from "react";
-import { AppGenericError } from "./types";
+import { Words } from "../app-context/types";
+import { AppGenericError, ContentSection } from "./types";
 
-export const useFileFunctions = () => {
+export const useWordContentFunctions = () => {
   const extractWords = useCallback((content: string): [string, number][] => {
     const words = content
-    .split(
+      .split(
         // eslint-disable-next-line no-useless-escape
         /[\#\$\%\^\&\*_\+\~@\!\?\.,\/\^\*;:{}=\-_`~()“”‘’'"\[\]\->:,\s\n\r\d\0]+/i
       )
@@ -45,8 +46,41 @@ export const useFileFunctions = () => {
     });
   }, []);
 
+  const extractClassifiedContent = useCallback(
+    (content: string, learnedWords: Words): ContentSection[] => {
+      const sections =
+        content
+          .match(
+            // eslint-disable-next-line no-useless-escape
+            /([\#\$\%\^\&\*_\+\~@\!\?\.,\/\^\*;:{}=\-_`~()“”‘’'"\[\]\->:,\s\n\r\d\0]+)|([^\#\$\%\^\&\*_\+\~@\!\?\.,\/\^\*;:{}=\-_`~()“”‘’'"\[\]\->:,\s\n\r\d\0]+)/gi
+          )
+          ?.reduce((prev, w) => {
+            const currentItem: ContentSection = {
+              content: w,
+              isLearned: !!learnedWords[w?.toLocaleLowerCase()],
+            };
+
+            if (prev.length === 0) {
+              prev.push(currentItem);
+              return prev;
+            }
+
+            if (prev[prev.length - 1].isLearned === currentItem.isLearned) {
+              prev[prev.length - 1].content += currentItem.content;
+            } else {
+              prev.push(currentItem);
+            }
+            return prev;
+          }, [] as ContentSection[]) ?? [];
+
+      return sections;
+    },
+    []
+  );
+
   return {
-    extractWords,
     readFile,
+    extractWords,
+    extractClassifiedContent,
   };
 };
