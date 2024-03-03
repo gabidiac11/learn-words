@@ -3,7 +3,6 @@ import { useUIFeedback } from "../../app-context/useUIFeedback";
 import { useWordContentFunctions } from "../../core/useWordContentFunctions";
 import { useWordFunctions } from "../../core/useWordFunctions";
 import { Record } from "../../model.types";
-import { getErrorMessage } from "../../utils";
 import { PaginatedWords } from "../../components/PaginatedWords/PaginatedWords";
 import { RecordContent } from "../../components/RecordContent/RecordContent";
 import { Textarea } from "@mui/joy";
@@ -22,7 +21,7 @@ export const TextPage = () => {
 
   const [value, setValue] = useState("");
 
-  const onChange = useCallback(async (e:ChangeEvent<HTMLTextAreaElement>) => {
+  const onChange = useCallback(async (e: ChangeEvent<HTMLTextAreaElement>) => {
     setValue(e.target.value);
   }, []);
 
@@ -39,7 +38,7 @@ export const TextPage = () => {
       });
     } catch (error) {
       console.error(error);
-      displayError(getErrorMessage(error));
+      displayError(error);
     }
   }, [addTextRecord, displayError, extractWords, value]);
 
@@ -50,7 +49,7 @@ export const TextPage = () => {
         setWordState(null);
       } catch (error) {
         console.error(error);
-        displayError(getErrorMessage(error));
+        displayError(error);
       }
     }
   }, [displayError, removeRecord, wordState?.record]);
@@ -93,7 +92,10 @@ export const TextPage = () => {
         )}
         {wordState && <PaginatedWords words={wordState.words} />}
         {wordState && (
-          <RecordContent key={wordState.record.id} content={value} />
+          <RecordContent
+            key={wordState.record.id}
+            content={value}
+          />
         )}
       </div>
     </div>

@@ -146,7 +146,7 @@ export const useWordFunctions = () => {
   );
 
   const addWordToLearningList = useCallback(
-    async (word: string): Promise<any> => {
+    async (word: string): Promise<string> => {
       const id = uuidv4();
       const result = await set(`words-to-learn/${id}`, word);
       result.throwIfError(`Could not add '${word}' to words to learn`);
@@ -155,6 +155,7 @@ export const useWordFunctions = () => {
         ...wordsToLearn,
         [word]: id,
       });
+      return id;
     },
     [set, setWordsToLearn, wordsToLearn]
   );

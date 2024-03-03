@@ -11,10 +11,8 @@ import AppSelect from "../AppSelect";
 import { uuidv4 } from "@firebase/util";
 import { useAppStateContext } from "../../app-context/useAppState";
 import { useWordFunctions } from "../../core/useWordFunctions";
-import { getErrorMessage } from "../../utils";
 import { useUIFeedback } from "../../app-context/useUIFeedback";
 import { StarBorder, Star, Check as CheckIcon } from "@mui/icons-material";
-import { Words } from "../../app-context/types";
 import { useIsElementInView } from "../../hooks/useIsElementInView";
 import { useIsElementFocused } from "../../hooks/useIsElementFocused";
 
@@ -44,7 +42,10 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
 
   const isFocused = useIsElementFocused(refContainer.current);
   const [showLearned, setShowLearned] = useState(false);
-  const [sessionLearned, setSessionLearned] = useState<Words>({});
+  const [showToLearnOnly, setShowToLearnOnly] = useState(false);
+
+  // prevent items disapearing from the list if filter is applied untill pagination is reseted by the user
+  const [sessionWords, setSessionWords] = useState<{[word:string]: true}>({});
 
   const [numOfLearned, numOfUnknown] = useMemo(
     () =>
@@ -71,30 +72,46 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
     [pagination.page, pagination.pageSize]
   );
 
-  const filteredWords = useMemo(
-    () =>
-      showLearned
-        ? words
-        : words.filter(([w]) => !learnedWords[w] || sessionLearned[w]),
-    [learnedWords, sessionLearned, showLearned, words]
-  );
+  const filteredWords = useMemo(() => {
+    if (showLearned === true && showToLearnOnly === false) {
+      return words;
+    }
+
+    const satisfiesShowLearnOnly = showToLearnOnly
+      ? (w: string) => !!wordsToLearn[w]
+      : () => true
+    const satisfiesShowToLearn = showLearned
+      ? () => true
+      : (w: string) => !learnedWords[w];
+
+    return words.filter(
+      ([w]) => sessionWords[w] || (satisfiesShowLearnOnly(w) && satisfiesShowToLearn(w))
+    );
+  }, [
+    learnedWords,
+    sessionWords,
+    showLearned,
+    showToLearnOnly,
+    words,
+    wordsToLearn,
+  ]);
 
   const numOfPages = useMemo(() => {
     return Math.ceil(filteredWords.length / pagination.pageSize);
   }, [filteredWords.length, pagination.pageSize]);
 
   const onToggleLearnedWords = useCallback(
-    async (word: string) => {
+    (word: string) => {
       try {
         const id = learnedWords[word];
         if (id) {
           removeLearnedWord(word, id);
         } else {
-          const addedWordId = await addLearnedWord(word);
-          setSessionLearned((prev) => ({ ...prev, [word]: addedWordId }));
+          addLearnedWord(word);
+          setSessionWords((prev) => ({ ...prev, [word]: true }));
         }
       } catch (error) {
-        displayError(getErrorMessage(error));
+        displayError(error);
       }
     },
     [addLearnedWord, displayError, learnedWords, removeLearnedWord]
@@ -104,13 +121,14 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
     (word: string) => {
       try {
         const id = wordsToLearn[word];
+        setSessionWords((prev) => ({ ...prev, [word]: true }));
         if (id) {
           removeWordFromLearningList(word, id);
         } else {
           addWordToLearningList(word);
         }
       } catch (error) {
-        displayError(getErrorMessage(error));
+        displayError(error);
       }
     },
     [
@@ -128,8 +146,21 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
         pageSize: pagination.pageSize,
         key: uuidv4(),
       });
-      setSessionLearned({});
+      setSessionWords({});
       setShowLearned(checked);
+    },
+    [pagination.pageSize]
+  );
+
+  const onChangeDisplayToLearn = useCallback(
+    (e: unknown, checked: boolean) => {
+      setPagination({
+        page: 1,
+        pageSize: pagination.pageSize,
+        key: uuidv4(),
+      });
+      setSessionWords({});
+      setShowToLearnOnly(checked);
     },
     [pagination.pageSize]
   );
@@ -141,7 +172,7 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
       key: uuidv4(),
       page: 1,
     });
-    setSessionLearned({});
+    setSessionWords({});
   }, []);
 
   const onChangePage = useCallback(
@@ -222,11 +253,18 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
           options={pageOptions}
         />
         <FormControlLabel
-          className="checkbox-display-learned"
+          className="word-filter-checkbox"
           defaultChecked={showLearned}
           onChange={onChangeDisplayLearned}
-          control={<Checkbox />}
-          label="Learned words"
+          control={<Checkbox defaultChecked={showLearned} />}
+          label="Include learned"
+        />
+        <FormControlLabel
+          className="word-filter-checkbox"
+          defaultChecked={showToLearnOnly}
+          onChange={onChangeDisplayToLearn}
+          control={<Checkbox defaultChecked={showToLearnOnly} />}
+          label="Stared only"
         />
         <div ref={refPagination}>
           <Pagination {...paginationProps} key={pagination.key} />

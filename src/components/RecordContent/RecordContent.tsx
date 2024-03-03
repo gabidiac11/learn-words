@@ -1,5 +1,5 @@
-import { Button } from "@mui/material";
-import { Fragment, useEffect, useState } from "react";
+import { Button } from "@mui/joy";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { useAppStateContext } from "../../app-context/useAppState";
 import { ContentSection } from "../../core/types";
 import { useWordContentFunctions } from "../../core/useWordContentFunctions";
@@ -7,12 +7,31 @@ import HighlightIcon from "@mui/icons-material/Highlight";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import "./RecordContent.scss";
 import { ClearRounded } from "@mui/icons-material";
+import { useUIFeedback } from "../../app-context/useUIFeedback";
 
 export const RecordContent = ({ content }: { content: string }) => {
   const { extractClassifiedContent } = useWordContentFunctions();
   const { learnedWords } = useAppStateContext();
+  const { displayError } = useUIFeedback();
+
   const [changed, setChanged] = useState<boolean>(true);
   const [sections, setSections] = useState<ContentSection[]>();
+
+  const onAddHighlight = useCallback(async () => {
+    try {
+      setSections(extractClassifiedContent(content, learnedWords));
+      setChanged(false);
+    } catch (error) {
+      console.error(error);
+      displayError(error);
+      setChanged(true);
+    }
+  }, [content, displayError, extractClassifiedContent, learnedWords]);
+
+  const onRemoveHighlight = useCallback(() => {
+    setSections(undefined);
+    setChanged(true);
+  }, []);
 
   useEffect(() => {
     setChanged(true);
@@ -25,25 +44,19 @@ export const RecordContent = ({ content }: { content: string }) => {
         <div className="flex">
           <Button
             className="mr-15"
-            variant="contained"
+            variant="solid"
             disabled={!changed}
-            onClick={() => {
-              setSections(extractClassifiedContent(content, learnedWords));
-              setChanged(false);
-            }}
-            startIcon={!sections ? <HighlightIcon /> : <RefreshIcon />}
+            onClick={onAddHighlight}
+            startDecorator={!sections ? <HighlightIcon /> : <RefreshIcon />}
           >
             {!sections && "Add highlight"}
             {!!sections && "Refresh highlight"}
           </Button>
           {!!sections && (
             <Button
-              variant="contained"
-              onClick={() => {
-                setSections(undefined);
-                setChanged(true);
-              }}
-              startIcon={<ClearRounded />}
+              variant="solid"
+              onClick={onRemoveHighlight}
+              startDecorator={<ClearRounded />}
             >
               Remove highlight
             </Button>

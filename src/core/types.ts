@@ -86,3 +86,8 @@ export type ContentSection = {
   content: string;
   isLearned: boolean;
 }
+
+export enum Extensions {
+  Srt = ".srt", 
+  Txt = ".txt"
+}

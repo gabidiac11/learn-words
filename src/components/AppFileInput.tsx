@@ -5,6 +5,7 @@ import { styled } from "@mui/joy";
 import { ChangeEvent, useCallback, useState } from "react";
 import { DeleteRounded as ClearIcon } from "@mui/icons-material";
 import { uuidv4 } from "@firebase/util";
+import { Extensions } from "../core/types";
 
 const VisuallyHiddenInput = styled("input")`
   clip: rect(0 0 0 0);
@@ -22,8 +23,8 @@ const maxDisplay = 50;
 
 export const AppFileInput = (props: {
   disabled?: boolean;
-  allowedExtensions: string[];
-  onChange: (e: File) => Promise<unknown>;
+  allowedExtensions: Extensions[];
+  onChange: (e: File, extension: Extensions) => Promise<unknown>;
   onRemove: () => void;
 }) => {
   const [fileName, setFileName] = useState<string | null>();
@@ -40,7 +41,10 @@ export const AppFileInput = (props: {
       }
 
       const [extension] = file.name.match(/\.([\w]+)$/) ?? [];
-      if (!props.allowedExtensions.some((ext) => ext === extension)) {
+      const fileExtension = props.allowedExtensions.find(
+        (ext) => ext === extension
+      );
+      if (!fileExtension) {
         displayError(
           `Files '${extension}' file not allowed, use one of ${props.allowedExtensions.join(
             ", "
@@ -57,7 +61,7 @@ export const AppFileInput = (props: {
             )}`
           : file.name
       );
-      props.onChange(file);
+      props.onChange(file, fileExtension);
     },
     [displayError, props]
   );
@@ -103,7 +107,12 @@ export const AppFileInput = (props: {
         {!fileName && "Upload a file"}
         {!!fileName && fileName}
         {!props.disabled && (
-          <VisuallyHiddenInput accept={`${props.allowedExtensions.join(",")}`} key={inputKey} type="file" onChange={onChange} />
+          <VisuallyHiddenInput
+            accept={`${props.allowedExtensions.join(",")}`}
+            key={inputKey}
+            type="file"
+            onChange={onChange}
+          />
         )}
       </Button>
       {!!fileName && (

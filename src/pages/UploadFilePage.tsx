@@ -3,12 +3,12 @@ import { useUIFeedback } from "../app-context/useUIFeedback";
 import { useWordContentFunctions } from "../core/useWordContentFunctions";
 import { useWordFunctions } from "../core/useWordFunctions";
 import { Record } from "../model.types";
-import { getErrorMessage } from "../utils";
 import { PaginatedWords } from "../components/PaginatedWords/PaginatedWords";
 import { AppFileInput } from "../components/AppFileInput";
 import { RecordContent } from "../components/RecordContent/RecordContent";
+import { Extensions } from "../core/types";
 
-const allowedExtensions = [".srt", ".txt"];
+const allowedExtensions = [Extensions.Srt, Extensions.Txt];
 
 export const UploadFilePage = () => {
   const { displayError } = useUIFeedback();
@@ -36,7 +36,7 @@ export const UploadFilePage = () => {
         });
       } catch (error) {
         console.error(error);
-        displayError(getErrorMessage(error));
+        displayError(error);
       }
     },
     [addTextRecord, displayError, extractWords, readFile]
@@ -49,7 +49,7 @@ export const UploadFilePage = () => {
         setWordState(null);
       } catch (error) {
         console.error(error);
-        displayError(getErrorMessage(error));
+        displayError(error);
       }
     }
   }, [displayError, removeRecord, wordState?.record]);

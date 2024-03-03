@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { Snack, StateActionType } from "./types";
 import { useAppDispatch } from "./useAppDispatch";
 import { uuidv4 } from "@firebase/util";
+import { getErrorMessage } from "../utils";
 
 export const useUIFeedback = () => {
   const { dispatch } = useAppDispatch();
@@ -30,11 +31,12 @@ export const useUIFeedback = () => {
   );
 
   const displayError = useCallback(
-    (message: string) =>
+    (error: unknown) => {
       addSnack({
-        message,
+        message: getErrorMessage(error),
         severity: "error",
-      }),
+      })
+    },
     [addSnack]
   );
 

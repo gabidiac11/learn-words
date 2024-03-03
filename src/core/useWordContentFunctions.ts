@@ -47,7 +47,10 @@ export const useWordContentFunctions = () => {
   }, []);
 
   const extractClassifiedContent = useCallback(
-    (content: string, learnedWords: Words): ContentSection[] => {
+    (
+      content: string,
+      learnedWords: Words
+    ): ContentSection[] => {
       const sections =
         content
           .match(
@@ -59,6 +62,15 @@ export const useWordContentFunctions = () => {
               content: w,
               isLearned: !!learnedWords[w?.toLocaleLowerCase()],
             };
+
+            if (
+              // eslint-disable-next-line no-useless-escape
+              /^[\#\$\%\^\&\*_\+\~@\!\?\.,\/\^\*;:{}=\-_`~()“”‘’'"\[\]\->:,\s\n\r\d\0]+$/.test(
+                w
+              )
+            ) {
+              currentItem.isLearned = true;
+            }
 
             if (prev.length === 0) {
               prev.push(currentItem);
@@ -91,6 +103,6 @@ export const useWordContentFunctions = () => {
     readFile,
     extractWords,
     extractClassifiedContent,
-    isValidContent
+    isValidContent,
   };
 };
