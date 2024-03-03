@@ -20,7 +20,9 @@ const VisuallyHiddenInput = styled("input")`
 
 const maxDisplay = 50;
 
-export const FileInput = (props: {
+export const AppFileInput = (props: {
+  disabled?: boolean;
+  allowedExtensions: string[];
   onChange: (e: File) => Promise<unknown>;
   onRemove: () => void;
 }) => {
@@ -31,10 +33,19 @@ export const FileInput = (props: {
 
   const onChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      console.log("change", e);
       const file = e.target.files?.[0];
       if (!file) {
         displayError("No file selected.");
+        return;
+      }
+
+      const [extension] = file.name.match(/\.([\w]+)$/) ?? [];
+      if (!props.allowedExtensions.some((ext) => ext === extension)) {
+        displayError(
+          `Files '${extension}' file not allowed, use one of ${props.allowedExtensions.join(
+            ", "
+          )}`
+        );
         return;
       }
 
@@ -70,6 +81,7 @@ export const FileInput = (props: {
         tabIndex={-1}
         variant="outlined"
         color="neutral"
+        disabled={!!props.disabled}
         startDecorator={
           <SvgIcon>
             <svg
@@ -90,7 +102,9 @@ export const FileInput = (props: {
       >
         {!fileName && "Upload a file"}
         {!!fileName && fileName}
-        <VisuallyHiddenInput key={inputKey} type="file" onChange={onChange} />
+        {!props.disabled && (
+          <VisuallyHiddenInput accept={`${props.allowedExtensions.join(",")}`} key={inputKey} type="file" onChange={onChange} />
+        )}
       </Button>
       {!!fileName && (
         <button className="btn-svg ml-10" onClick={onRemove}>

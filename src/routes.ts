@@ -15,6 +15,10 @@ export const routes = {
     path: "/file",
     title: "Upload file",
   },
+  Text: {
+    path: "/text",
+    title: "Insert record",
+  },
   Login: {
     path: "/login",
     title: "Login",

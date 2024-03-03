@@ -210,21 +210,20 @@ button {
 $array: 5, 10, 15, 20, 25, 40;
 @each $dim in $array {
   .ml-#{$dim} {
-    margin-left: #{$dim}px;
+    margin-left: #{$dim}px!important;
   }
   .mr-#{$dim} {
-    margin-right: #{$dim}px;
+    margin-right: #{$dim}px!important;
+  }
+  .mb-#{$dim} {
+    margin-bottom: #{$dim}px!important;
   }
   .pl-#{$dim} {
-    padding-left: #{$dim}px;
+    padding-left: #{$dim}px!important;
   }
   .pr-#{$dim} {
-    padding-right: #{$dim}px;
+    padding-right: #{$dim}px!important;
   }
-}
-
-.ml-5 {
-  margin-left: 5px;
 }
 
 .card-image-container {

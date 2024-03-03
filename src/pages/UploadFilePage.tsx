@@ -5,13 +5,15 @@ import { useWordFunctions } from "../core/useWordFunctions";
 import { Record } from "../model.types";
 import { getErrorMessage } from "../utils";
 import { PaginatedWords } from "../components/PaginatedWords/PaginatedWords";
-import { FileInput } from "../components/FileInput";
+import { AppFileInput } from "../components/AppFileInput";
 import { RecordContent } from "../components/RecordContent/RecordContent";
+
+const allowedExtensions = [".srt", ".txt"];
 
 export const UploadFilePage = () => {
   const { displayError } = useUIFeedback();
   const { extractWords, readFile } = useWordContentFunctions();
-  const { addFileRecord, removeRecord } = useWordFunctions();
+  const { addTextRecord, removeRecord } = useWordFunctions();
 
   const [wordState, setWordState] = useState<{
     words: [string, number][];
@@ -25,8 +27,7 @@ export const UploadFilePage = () => {
       try {
         const content = await readFile(file);
         const words = extractWords(content);
-
-        const record = await addFileRecord(file.name, content);
+        const record = await addTextRecord(file.name, content);
         setWordState({
           fileName: file.name,
           content,
@@ -38,7 +39,7 @@ export const UploadFilePage = () => {
         displayError(getErrorMessage(error));
       }
     },
-    [addFileRecord, displayError, extractWords, readFile]
+    [addTextRecord, displayError, extractWords, readFile]
   );
 
   const onRemoveRecord = useCallback(async () => {
@@ -56,9 +57,19 @@ export const UploadFilePage = () => {
   return (
     <div className="view page-wrapper">
       <div className="view-content">
-        <FileInput onChange={onChange} onRemove={onRemoveRecord} />
+        <AppFileInput
+          allowedExtensions={allowedExtensions}
+          disabled={!!wordState}
+          onChange={onChange}
+          onRemove={onRemoveRecord}
+        />
         {wordState && <PaginatedWords words={wordState.words} />}
-        {wordState && <RecordContent key={wordState.record.id} content={wordState.content} />}
+        {wordState && (
+          <RecordContent
+            key={wordState.record.id}
+            content={wordState.content}
+          />
+        )}
       </div>
     </div>
   );

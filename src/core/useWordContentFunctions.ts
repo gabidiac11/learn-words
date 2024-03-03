@@ -10,10 +10,10 @@ export const useWordContentFunctions = () => {
         /[\#\$\%\^\&\*_\+\~@\!\?\.,\/\^\*;:{}=\-_`~()“”‘’'"\[\]\->:,\s\n\r\d\0]+/i
       )
       .filter((i) => !!i)
-      .reduce((prev, w) => {
+      .reduce((acc, w) => {
         const lw = w.toLowerCase();
-        prev[lw] = (prev[lw] ?? 0) + 1;
-        return prev;
+        acc[lw] = (acc[lw] ?? 0) + 1;
+        return acc;
       }, {} as { [key: string]: number });
 
     const wordsOrdered = Object.entries(words).sort(
@@ -78,9 +78,19 @@ export const useWordContentFunctions = () => {
     []
   );
 
+  const isValidContent = useCallback(
+    (content: string) =>
+      // eslint-disable-next-line no-useless-escape
+      /[^\#\$\%\^\&\*_\+\~@\!\?\.,\/\^\*;:{}=\-_`~()“”‘’'"\[\]\->:,\s\n\r\d\0]+/.test(
+        content
+      ),
+    []
+  );
+
   return {
     readFile,
     extractWords,
     extractClassifiedContent,
+    isValidContent
   };
 };

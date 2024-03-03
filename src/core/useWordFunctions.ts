@@ -1,13 +1,12 @@
 import { uuidv4 } from "@firebase/util";
 import { useCallback } from "react";
-import {
-  Uuid,
-  Words,
-} from "../app-context/types";
+import { Uuid, Words } from "../app-context/types";
 import { useAppStateContext } from "../app-context/useAppState";
 import { useLearningCtxActions } from "../app-context/useLearningCtxActions";
 import { Record, RecordType } from "../model.types";
+import { AppGenericError } from "./types";
 import { useDatabase } from "./useDatabase";
+import { useWordContentFunctions } from "./useWordContentFunctions";
 
 const toWords = (data?: { [key: Uuid]: string }) =>
   Object.entries(data ?? {}).reduce((prev, [id, w]) => {
@@ -15,15 +14,17 @@ const toWords = (data?: { [key: Uuid]: string }) =>
     return prev;
   }, {} as Words);
 
-const generateRecordId = (name: string) => `${name
-  .slice(0, 20)
-  // eslint-disable-next-line no-useless-escape
-  .replace(/[\.\#\$\/\[\]\s]/g, "_")}-${uuidv4()}`;
+const generateRecordId = (name: string) =>
+  `${name
+    .slice(0, 20)
+    // eslint-disable-next-line no-useless-escape
+    .replace(/[\.\#\$\/\[\]\s]/g, "_")}-${uuidv4()}`;
 
 export const useWordFunctions = () => {
   const { get, set, remove } = useDatabase();
   const { setLearnedWords, setWordsToLearn } = useLearningCtxActions();
   const { learnedWords, wordsToLearn } = useAppStateContext();
+  const { isValidContent } = useWordContentFunctions();
 
   const initLearnedWords = useCallback(async (): Promise<any> => {
     const result = await get<{ [key: Uuid]: string }>(`learned-words`);
@@ -84,28 +85,27 @@ export const useWordFunctions = () => {
   //   [update, wordsToLearn]
   // );
 
-  const addFileRecord = useCallback(
-    async (
-      name: string,
-      content: string
-    ): Promise<Record> => {
+  const addTextRecord = useCallback(
+    async (name: string, content: string): Promise<Record> => {
+      if (!isValidContent(content)) {
+        throw new AppGenericError("Content should contain words.");
+      }
       const recordId = generateRecordId(name);
-      const result = await set(`records/${recordId}`, {
-        type: RecordType.Srt,
-        name,
-        content,
-      });
-      result.throwIfError("Could not add record");
+      // const result = await set(`records/${recordId}`, {
+      //   type: RecordType.File,
+      //   name,
+      //   content,
+      // });
+      // result.throwIfError("Could not add record");
 
       return {
         id: recordId,
         name,
         content,
-        type: RecordType.Srt,
-        wordsToLearn: {},
+        type: RecordType.Text,
       };
     },
-    [set]
+    [isValidContent]
   );
 
   const removeRecord = useCallback(
@@ -175,13 +175,13 @@ export const useWordFunctions = () => {
   return {
     initLearnedWords,
     initWordsToLearn,
-    
-    addFileRecord,
+
+    addTextRecord,
     removeRecord,
 
     addLearnedWord,
     removeLearnedWord,
-    
+
     addWordToLearningList,
     removeWordFromLearningList,
   };

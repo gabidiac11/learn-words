@@ -3,7 +3,10 @@ import { Fragment, useEffect, useState } from "react";
 import { useAppStateContext } from "../../app-context/useAppState";
 import { ContentSection } from "../../core/types";
 import { useWordContentFunctions } from "../../core/useWordContentFunctions";
+import HighlightIcon from "@mui/icons-material/Highlight";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import "./RecordContent.scss";
+import { ClearRounded } from "@mui/icons-material";
 
 export const RecordContent = ({ content }: { content: string }) => {
   const { extractClassifiedContent } = useWordContentFunctions();
@@ -17,35 +20,56 @@ export const RecordContent = ({ content }: { content: string }) => {
 
   return (
     <div className="record-content">
-      <div className="record-panel">
-        <Button
-          disabled={!changed}
-          onClick={() => {
-            setSections(extractClassifiedContent(content, learnedWords));
-            setChanged(false);
-          }}
-        >
-          Refresh word highlight
-        </Button>
+      <div className="record-panel mb-15">
+        <div className="content-label mr-15">Content</div>
+        <div className="flex">
+          <Button
+            className="mr-15"
+            variant="contained"
+            disabled={!changed}
+            onClick={() => {
+              setSections(extractClassifiedContent(content, learnedWords));
+              setChanged(false);
+            }}
+            startIcon={!sections ? <HighlightIcon /> : <RefreshIcon />}
+          >
+            {!sections && "Add highlight"}
+            {!!sections && "Refresh highlight"}
+          </Button>
+          {!!sections && (
+            <Button
+              variant="contained"
+              onClick={() => {
+                setSections(undefined);
+                setChanged(true);
+              }}
+              startIcon={<ClearRounded />}
+            >
+              Remove highlight
+            </Button>
+          )}
+        </div>
       </div>
-      <pre>
-        {!!sections &&
-          sections.map((section, i) => {
-            if (section.isLearned) {
+      <div className="record-content-txt">
+        <pre>
+          {!!sections &&
+            sections.map((section, i) => {
+              if (section.isLearned) {
+                return (
+                  <Fragment key={i}>
+                    <span>{section.content}</span>
+                  </Fragment>
+                );
+              }
               return (
                 <Fragment key={i}>
-                  <span>{section.content}</span>
+                  <span style={{ color: "red" }}>{section.content}</span>
                 </Fragment>
               );
-            }
-            return (
-              <Fragment key={i}>
-                <span style={{ color: "red" }}>{section.content}</span>
-              </Fragment>
-            );
-          })}
-        {!sections && content}
-      </pre>
+            })}
+          {!sections && content}
+        </pre>
+      </div>
     </div>
   );
 };

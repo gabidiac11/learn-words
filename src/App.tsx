@@ -13,6 +13,7 @@ import { routes as r } from "./routes";
 import { WithInitialization } from "./components/WithInitialization";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorBoundaryFallback } from "./components/ErrorBoundaryFallback";
+import { TextPage } from "./pages/TextPage/TextPage";
 
 function App() {
   const { user, isVerifying } = useAuthInit();
@@ -38,6 +39,7 @@ function App() {
                   element={<WordsToLearnPage />}
                 />
                 <Route path={r.File.path} element={<UploadFilePage />} />
+                <Route path={r.Text.path} element={<TextPage />} />
                 <Route
                   path="*"
                   element={<DefaultRouteRedirection isAuth={isAuth} />}

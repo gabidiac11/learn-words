@@ -1,22 +1,11 @@
-import { Words } from "./app-context/types";
-
 export enum RecordType {
-  Srt = "Srt",
-  LinkArticle = "LinkArticle",
-  LinkYt = "LinkYt",
   Text = "Text",
+  Link = "Link",
 }
 
 export type Record = {
   id: string;
+  type: RecordType,
   name: string;
-  wordsToLearn: Words;
-} & (
-  | {
-      type: RecordType.Srt;
-      content: string;
-    }
-  | { type: RecordType.Text; content: string }
-  | { type: RecordType.LinkArticle }
-  | { type: RecordType.LinkYt }
-);
+  content: string;
+};
