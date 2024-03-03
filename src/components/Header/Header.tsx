@@ -12,6 +12,7 @@ import {
   UploadFileRounded,
   TextIncrease,
   LogoutRounded,
+  AddLink
 } from "@mui/icons-material";
 import { auth } from "../../firebase";
 import { signOut } from "firebase/auth";
@@ -30,6 +31,10 @@ const links = [
   {
     path: routes.Text.path,
     icon: <TextIncrease htmlColor="white" className="outline-none" />,
+  },
+  {
+    path: routes.Link.path,
+    icon: <AddLink htmlColor="white" className="outline-none" />,
   },
 ];
 

@@ -19,6 +19,10 @@ export const routes = {
     path: "/text",
     title: "Insert record",
   },
+  Link: {
+    path: "/link",
+    title: "Add link",
+  },
   Login: {
     path: "/login",
     title: "Login",

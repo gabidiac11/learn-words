@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import Home from "./pages/Home";
 import Login from "./auth/Login";
-import { BrowserRouter, useNavigate } from "react-router-dom";
+import { BrowserRouter, useLocation, useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import { useAuthInit } from "./auth/authHooks";
 import { LoaderView } from "./components/Loader";
@@ -14,6 +14,7 @@ import { WithInitialization } from "./components/WithInitialization";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorBoundaryFallback } from "./components/ErrorBoundaryFallback";
 import { TextRecordPage } from "./pages/TextRecordPage";
+import { NotFound } from "./pages/NotFound";
 
 function App() {
   const { user, isVerifying } = useAuthInit();
@@ -40,6 +41,7 @@ function App() {
                 />
                 <Route path={r.File.path} element={<FileRecordPage />} />
                 <Route path={r.Text.path} element={<TextRecordPage />} />
+                <Route path={"/404"} element={<NotFound />} />
                 <Route
                   path="*"
                   element={<DefaultRouteRedirection isAuth={isAuth} />}
@@ -63,11 +65,23 @@ function App() {
 
 const DefaultRouteRedirection = (props: { isAuth: boolean }) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    props.isAuth && navigate("/home", { replace: true });
-    !props.isAuth && navigate("/login", { replace: true });
-  }, [navigate, props.isAuth]);
+    if (!props.isAuth) {
+      navigate("/login", { replace: true });
+      return;
+    }
+    if (
+      location.pathname === "/login" ||
+      location.pathname === "/" ||
+      !location.pathname
+    ) {
+      navigate("/home", { replace: true });
+    } else {
+      navigate("/404", { replace: true });
+    }
+  }, [location.pathname, navigate, props.isAuth]);
 
   return <LoaderView />;
 };
