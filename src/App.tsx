@@ -5,15 +5,15 @@ import { BrowserRouter, useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import { useAuthInit } from "./auth/authHooks";
 import { LoaderView } from "./components/Loader";
-import { UploadFilePage } from "./pages/UploadFilePage";
-import Header from "./components/Header";
+import { FileRecordPage } from "./pages/FileRecordPage";
+import Header from "./components/Header/Header";
 import { LearnedWordsPage } from "./pages/LearnedWordsPage";
 import { WordsToLearnPage } from "./pages/WordsToLearnPage";
 import { routes as r } from "./routes";
 import { WithInitialization } from "./components/WithInitialization";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorBoundaryFallback } from "./components/ErrorBoundaryFallback";
-import { TextPage } from "./pages/TextPage/TextPage";
+import { TextRecordPage } from "./pages/TextRecordPage";
 
 function App() {
   const { user, isVerifying } = useAuthInit();
@@ -38,8 +38,8 @@ function App() {
                   path={r.WordsToLearn.path}
                   element={<WordsToLearnPage />}
                 />
-                <Route path={r.File.path} element={<UploadFilePage />} />
-                <Route path={r.Text.path} element={<TextPage />} />
+                <Route path={r.File.path} element={<FileRecordPage />} />
+                <Route path={r.Text.path} element={<TextRecordPage />} />
                 <Route
                   path="*"
                   element={<DefaultRouteRedirection isAuth={isAuth} />}

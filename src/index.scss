@@ -219,11 +219,24 @@ $array: 5, 10, 15, 20, 25, 40;
   .mb-#{$dim} {
     margin-bottom: #{$dim}px!important;
   }
+  .mt-#{$dim} {
+    padding-top: #{$dim}px!important;
+  }
+
+  .pb-#{$dim} {
+    padding: #{$dim}px!important;
+  }
   .pl-#{$dim} {
     padding-left: #{$dim}px!important;
   }
   .pr-#{$dim} {
     padding-right: #{$dim}px!important;
+  }
+  .pt-#{$dim} {
+    padding-top: #{$dim}px!important;
+  }
+  .p-#{$dim} {
+    padding: #{$dim}px!important;
   }
 }
 

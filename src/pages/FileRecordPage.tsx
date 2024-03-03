@@ -10,7 +10,7 @@ import { Extensions } from "../core/types";
 
 const allowedExtensions = [Extensions.Srt, Extensions.Txt];
 
-export const UploadFilePage = () => {
+export const FileRecordPage = () => {
   const { displayError } = useUIFeedback();
   const { extractWords, readFile } = useWordContentFunctions();
   const { addTextRecord, removeRecord } = useWordFunctions();

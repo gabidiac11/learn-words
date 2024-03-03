@@ -7,9 +7,31 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Avatar } from "@mui/material";
 import { useNavigate } from "react-router";
-import { Home, LogoutRounded } from "@mui/icons-material";
-import { auth } from "../firebase";
+import {
+  Home,
+  UploadFileRounded,
+  TextIncrease,
+  LogoutRounded,
+} from "@mui/icons-material";
+import { auth } from "../../firebase";
 import { signOut } from "firebase/auth";
+import { routes } from "../../routes";
+import "./Header.scss";
+
+const links = [
+  {
+    path: routes.Home.path,
+    icon: <Home htmlColor="white" className="outline-none" />,
+  },
+  {
+    path: routes.File.path,
+    icon: <UploadFileRounded htmlColor="white" className="outline-none" />,
+  },
+  {
+    path: routes.Text.path,
+    icon: <TextIncrease htmlColor="white" className="outline-none" />,
+  },
+];
 
 export default function Header() {
   const [user] = useAuthState(auth);
@@ -21,14 +43,16 @@ export default function Header() {
         <Toolbar>
           {user && (
             <>
-              <button
-                className="no-btn"
-                onClick={() => navigate("/home")}
-                style={{ flexGrow: 0, padding: 10, boxSizing: "border-box" }}
-                tabIndex={0}
-              >
-                <Home htmlColor="white" className="outline-none" />
-              </button>
+              {links.map((item) => (
+                <button
+                  key={item.path}
+                  className="no-btn header-btn mr-20"
+                  onClick={() => navigate(item.path)}
+                  tabIndex={0}
+                >
+                  {item.icon}
+                </button>
+              ))}
 
               <Box sx={{ flexGrow: 1 }} />
 
