@@ -1,13 +1,14 @@
 import { ContentPaste } from "@mui/icons-material";
 import { Button } from "@mui/material";
-import { useCallback } from "react";
+import { PropsWithChildren, useCallback } from "react";
 import { useUIFeedback } from "../app-context/useUIFeedback";
 
 export const PasteButton = ({
   onChange,
+  children,
 }: {
   onChange: (value: string) => void;
-}) => {
+} & PropsWithChildren) => {
   const { displayError } = useUIFeedback();
   const copyFromClipboard = useCallback(async () => {
     try {
@@ -20,8 +21,8 @@ export const PasteButton = ({
   }, [displayError, onChange]);
 
   return (
-    <Button startIcon={<ContentPaste />} onClick={copyFromClipboard}>
-      Paste
+    <Button className="paste-btn" startIcon={<ContentPaste />} onClick={copyFromClipboard}>
+      {children ?? "Paste"}
     </Button>
   );
 };

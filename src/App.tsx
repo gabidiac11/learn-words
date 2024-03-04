@@ -15,6 +15,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { ErrorBoundaryFallback } from "./components/ErrorBoundaryFallback";
 import { TextRecordPage } from "./pages/TextRecordPage";
 import { NotFound } from "./pages/NotFound";
+import { UrlRecordPage } from "./pages/LinkRecordPage/UrlRecordPage";
 
 function App() {
   const { user, isVerifying } = useAuthInit();
@@ -41,6 +42,7 @@ function App() {
                 />
                 <Route path={r.File.path} element={<FileRecordPage />} />
                 <Route path={r.Text.path} element={<TextRecordPage />} />
+                <Route path={r.Link.path} element={<UrlRecordPage />} />
                 <Route path={"/404"} element={<NotFound />} />
                 <Route
                   path="*"

@@ -24,7 +24,7 @@ export const useWordFunctions = () => {
   const { get, set, remove } = useDatabase();
   const { setLearnedWords, setWordsToLearn } = useLearningCtxActions();
   const { learnedWords, wordsToLearn } = useAppStateContext();
-  const { isValidContent } = useWordContentFunctions();
+  const { containsWords } = useWordContentFunctions();
 
   const initLearnedWords = useCallback(async (): Promise<any> => {
     const result = await get<{ [key: Uuid]: string }>(`learned-words`);
@@ -87,7 +87,7 @@ export const useWordFunctions = () => {
 
   const addTextRecord = useCallback(
     async (name: string, content: string): Promise<Record> => {
-      if (!isValidContent(content)) {
+      if (!containsWords(content)) {
         throw new AppGenericError("Content should contain words.");
       }
       const recordId = generateRecordId(name);
@@ -105,7 +105,7 @@ export const useWordFunctions = () => {
         type: RecordType.Text,
       };
     },
-    [isValidContent]
+    [containsWords]
   );
 
   const removeRecord = useCallback(

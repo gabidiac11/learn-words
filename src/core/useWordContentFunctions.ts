@@ -1,14 +1,25 @@
+import axios from "axios";
 import { useCallback } from "react";
 import { Words } from "../app-context/types";
 import { AppGenericError, ContentSection } from "./types";
+import { allowedUrlFetch } from "./urlSources";
+
+// Original regex: \«\#\$\%\^\&\*_\+\~@\!\?\.,\/\^\*;:{}=\-_`~()“”‘’'"\[\]\->:,\s\n\r\d\0
+const nonWordRegexStr = `\\—\\«\\#\\$\\%\\^\\&\\*_\\+\\~@\\!\\?\\.,\\/\\^\\*;:{}=\\-_\`~()“”‘’'"\\[\\]\\->:,\\s\\n\\r\\d\\0`;
+const regexes = {
+  splitRegex: new RegExp(`[${nonWordRegexStr}]+`, "i"),
+  classifiedRegex: new RegExp(
+    `([${nonWordRegexStr}]+)|([^${nonWordRegexStr}]+)`,
+    "gi"
+  ),
+  isNonWordRegex: new RegExp(`^[${nonWordRegexStr}]+$/`),
+  containsWordRegex: new RegExp(`[^${nonWordRegexStr}]+`),
+};
 
 export const useWordContentFunctions = () => {
   const extractWords = useCallback((content: string): [string, number][] => {
     const words = content
-      .split(
-        // eslint-disable-next-line no-useless-escape
-        /[\#\$\%\^\&\*_\+\~@\!\?\.,\/\^\*;:{}=\-_`~()“”‘’'"\[\]\->:,\s\n\r\d\0]+/i
-      )
+      .split(regexes.splitRegex)
       .filter((i) => !!i)
       .reduce((acc, w) => {
         const lw = w.toLowerCase();
@@ -47,55 +58,60 @@ export const useWordContentFunctions = () => {
   }, []);
 
   const extractClassifiedContent = useCallback(
-    (
-      content: string,
-      learnedWords: Words
-    ): ContentSection[] => {
+    (content: string, learnedWords: Words): ContentSection[] => {
       const sections =
-        content
-          .match(
-            // eslint-disable-next-line no-useless-escape
-            /([\#\$\%\^\&\*_\+\~@\!\?\.,\/\^\*;:{}=\-_`~()“”‘’'"\[\]\->:,\s\n\r\d\0]+)|([^\#\$\%\^\&\*_\+\~@\!\?\.,\/\^\*;:{}=\-_`~()“”‘’'"\[\]\->:,\s\n\r\d\0]+)/gi
-          )
-          ?.reduce((prev, w) => {
-            const currentItem: ContentSection = {
-              content: w,
-              isLearned: !!learnedWords[w?.toLocaleLowerCase()],
-            };
+        content.match(regexes.classifiedRegex)?.reduce((prev, w) => {
+          const currentItem: ContentSection = {
+            content: w,
+            isLearned: !!learnedWords[w?.toLocaleLowerCase()],
+          };
 
-            if (
-              // eslint-disable-next-line no-useless-escape
-              /^[\#\$\%\^\&\*_\+\~@\!\?\.,\/\^\*;:{}=\-_`~()“”‘’'"\[\]\->:,\s\n\r\d\0]+$/.test(
-                w
-              )
-            ) {
-              currentItem.isLearned = true;
-            }
+          if (regexes.isNonWordRegex.test(w)) {
+            currentItem.isLearned = true;
+          }
 
-            if (prev.length === 0) {
-              prev.push(currentItem);
-              return prev;
-            }
-
-            if (prev[prev.length - 1].isLearned === currentItem.isLearned) {
-              prev[prev.length - 1].content += currentItem.content;
-            } else {
-              prev.push(currentItem);
-            }
+          if (prev.length === 0) {
+            prev.push(currentItem);
             return prev;
-          }, [] as ContentSection[]) ?? [];
+          }
+
+          if (prev[prev.length - 1].isLearned === currentItem.isLearned) {
+            prev[prev.length - 1].content += currentItem.content;
+          } else {
+            prev.push(currentItem);
+          }
+          return prev;
+        }, [] as ContentSection[]) ?? [];
 
       return sections;
     },
     []
   );
 
-  const isValidContent = useCallback(
-    (content: string) =>
-      // eslint-disable-next-line no-useless-escape
-      /[^\#\$\%\^\&\*_\+\~@\!\?\.,\/\^\*;:{}=\-_`~()“”‘’'"\[\]\->:,\s\n\r\d\0]+/.test(
-        content
-      ),
+  const containsWords = useCallback(
+    (content: string) => regexes.containsWordRegex.test(content),
+    []
+  );
+
+  const fetchUrlContent = useCallback(
+    async (url: string): Promise<{ name: string; content: string }> => {
+      const source = allowedUrlFetch.find((f) => f.regex.test(url));
+      if (!source) {
+        throw new AppGenericError(`Url source is not allowed`);
+      }
+
+      const { data: html } = await axios.get<string>(url, {
+        headers: {
+          "Content-Type": "text/html",
+        },
+      });
+      if (!html) {
+        throw new AppGenericError(
+          `Ups! Something went wrong. Could not fetch content.`
+        );
+      }
+      return await source.parse(html);
+    },
     []
   );
 
@@ -103,6 +119,7 @@ export const useWordContentFunctions = () => {
     readFile,
     extractWords,
     extractClassifiedContent,
-    isValidContent,
+    containsWords,
+    fetchUrlContent,
   };
 };
