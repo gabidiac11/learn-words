@@ -5,6 +5,10 @@
     max-width: calc(100vw - calc(var(--page-padding-h) * 2));
     overflow-x: auto;
     border: 1px solid rgba(0, 0, 0, 0.2);
+    pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
   }
   .record-panel {
     display: flex;

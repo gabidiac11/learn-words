@@ -9,10 +9,11 @@ import Input from "@mui/joy/Input";
 export const UrlRecordForm = ({
   submit,
 }: {
-  submit: (name: string, content: string) => void;
+  submit: (name: string, content: string, source: string) => void;
 }) => {
   const { displayError } = useUIFeedback();
   const [content, setContent] = useState("");
+  const [source, setSource] = useState("");
   const [name, setName] = useState("");
   const [errors, setErrors] = useState({
     name: false,
@@ -20,7 +21,11 @@ export const UrlRecordForm = ({
   });
 
   const onUrlInputChange = useCallback(
-    async (nameUpdate: string, contentUpdated: string) => {
+    async (
+      nameUpdate: string,
+      contentUpdated: string,
+      sourceUpdated: string
+    ) => {
       setErrors((p) => ({
         ...p,
         name: false,
@@ -28,6 +33,7 @@ export const UrlRecordForm = ({
       }));
       setName(nameUpdate);
       setContent(contentUpdated);
+      setSource(sourceUpdated);
     },
     []
   );
@@ -61,8 +67,8 @@ export const UrlRecordForm = ({
       displayError("Name is required.");
       return;
     }
-    submit(name, content);
-  }, [content, displayError, name, submit]);
+    submit(name, content, source);
+  }, [content, displayError, name, source, submit]);
 
   return (
     <div className="url-page-form">
@@ -80,27 +86,31 @@ export const UrlRecordForm = ({
         <UrlInput onChange={onUrlInputChange} />
       </div>
 
-      <div className="mt-20 page-input-container">
-        <Input
-          className="page-input"
-          error={errors.name}
-          onChange={onChangeName}
-          value={name}
-          placeholder="Enter name"
-        />
-      </div>
+      {content && (
+        <div className="mt-20 page-input-container">
+          <Input
+            className="page-input"
+            error={errors.name}
+            onChange={onChangeName}
+            value={name}
+            placeholder="Enter name"
+          />
+        </div>
+      )}
 
-      <div className="mt-20 page-input-container">
-        <Textarea
-          className="mt-15"
-          error={errors.content}
-          aria-label="minimum height"
-          value={content}
-          onChange={(e) => onChangeContent(e.target.value)}
-          minRows={5}
-          placeholder="Fetched content"
-        />
-      </div>
+      {content && (
+        <div className="mt-20 page-input-container">
+          <Textarea
+            className="mt-15"
+            error={errors.content}
+            aria-label="minimum height"
+            value={content}
+            onChange={(e) => onChangeContent(e.target.value)}
+            minRows={5}
+            placeholder="Fetched content"
+          />
+        </div>
+      )}
     </div>
   );
 };

@@ -222,10 +222,6 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
     scrollToThis();
   }, [scrollToThis]);
 
-  // TODO: make filters and pagination sticky while this is into view
-  // TODO: get a ux friendly way to add words to learn list (global) or on the record level
-  // TODO: implement swipe left-right
-
   const paginationProps: PaginationProps = {
     size: "large",
     className: "pagination",

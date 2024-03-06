@@ -2,7 +2,7 @@ import { Button } from "@mui/joy";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { useAppStateContext } from "../../app-context/useAppState";
 import { ContentSection } from "../../core/types";
-import { useWordContentFunctions } from "../../core/useWordContentFunctions";
+import { useWordContentFunctions } from "../../core/word-content/useWordContentFunctions";
 import HighlightIcon from "@mui/icons-material/Highlight";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import "./RecordContent.scss";

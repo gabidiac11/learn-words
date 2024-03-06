@@ -5,9 +5,11 @@ import { useUIFeedback } from "../app-context/useUIFeedback";
 
 export const PasteButton = ({
   onChange,
+  disabled,
   children,
 }: {
   onChange: (value: string) => void;
+  disabled?: boolean;
 } & PropsWithChildren) => {
   const { displayError } = useUIFeedback();
   const copyFromClipboard = useCallback(async () => {
@@ -21,7 +23,12 @@ export const PasteButton = ({
   }, [displayError, onChange]);
 
   return (
-    <Button className="paste-btn" startIcon={<ContentPaste />} onClick={copyFromClipboard}>
+    <Button
+      disabled={disabled}
+      className="paste-btn"
+      startIcon={<ContentPaste />}
+      onClick={copyFromClipboard}
+    >
       {children ?? "Paste"}
     </Button>
   );

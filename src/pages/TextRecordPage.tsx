@@ -1,6 +1,6 @@
 import { ChangeEvent, useCallback, useState } from "react";
 import { useUIFeedback } from "../app-context/useUIFeedback";
-import { useWordContentFunctions } from "../core/useWordContentFunctions";
+import { useWordContentFunctions } from "../core/word-content/useWordContentFunctions";
 import { useWordFunctions } from "../core/useWordFunctions";
 import { Record } from "../model.types";
 import { PaginatedWords } from "../components/PaginatedWords/PaginatedWords";
@@ -56,6 +56,7 @@ export const TextRecordPage = () => {
         {wordState && (
           <>
             <div className="page-form">
+              <h3>{wordState.record.name}</h3>
               <Button startIcon={<ClearRounded />} onClick={onRemoveRecord}>
                 Delete record
               </Button>

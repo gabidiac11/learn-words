@@ -1,25 +1,23 @@
 import axios from "axios";
 import { useCallback } from "react";
-import { Words } from "../app-context/types";
-import { AppGenericError, ContentSection } from "./types";
-import { allowedUrlFetch } from "./urlSources";
+import { Words } from "../../app-context/types";
+import { allowedSources } from "./sources";
+import { AppGenericError, ContentSection } from "../types";
 
 // Original regex: \«\#\$\%\^\&\*_\+\~@\!\?\.,\/\^\*;:{}=\-_`~()“”‘’'"\[\]\->:,\s\n\r\d\0
-const nonWordRegexStr = `\\—\\«\\#\\$\\%\\^\\&\\*_\\+\\~@\\!\\?\\.,\\/\\^\\*;:{}=\\-_\`~()“”‘’'"\\[\\]\\->:,\\s\\n\\r\\d\\0`;
+const nonWordRegexStr = `\\—\\«\\#\\$\\%\\^\\&\\*_\\+\\~@\\!\\?\\.,\\/\\^\\*;:{}=\\-_\`~\\(\\)“”‘’'"\\[\\]\\->:,\\s\\n\\r\\d\\0`;
 const regexes = {
-  splitRegex: new RegExp(`[${nonWordRegexStr}]+`, "i"),
-  classifiedRegex: new RegExp(
-    `([${nonWordRegexStr}]+)|([^${nonWordRegexStr}]+)`,
-    "gi"
-  ),
-  isNonWordRegex: new RegExp(`^[${nonWordRegexStr}]+$/`),
-  containsWordRegex: new RegExp(`[^${nonWordRegexStr}]+`),
+  splitRegex: () => new RegExp(`[${nonWordRegexStr}]+`, "i"),
+  classifiedRegex: () =>
+    new RegExp(`([${nonWordRegexStr}]+)|([^${nonWordRegexStr}]+)`, "gi"),
+  isNonWordRegex: () => new RegExp(`^[${nonWordRegexStr}]+$`),
+  containsWordRegex: () => new RegExp(`[^${nonWordRegexStr}]+`),
 };
 
 export const useWordContentFunctions = () => {
   const extractWords = useCallback((content: string): [string, number][] => {
     const words = content
-      .split(regexes.splitRegex)
+      .split(regexes.splitRegex())
       .filter((i) => !!i)
       .reduce((acc, w) => {
         const lw = w.toLowerCase();
@@ -60,13 +58,13 @@ export const useWordContentFunctions = () => {
   const extractClassifiedContent = useCallback(
     (content: string, learnedWords: Words): ContentSection[] => {
       const sections =
-        content.match(regexes.classifiedRegex)?.reduce((prev, w) => {
+        content.match(regexes.classifiedRegex())?.reduce((prev, w) => {
           const currentItem: ContentSection = {
             content: w,
             isLearned: !!learnedWords[w?.toLocaleLowerCase()],
           };
 
-          if (regexes.isNonWordRegex.test(w)) {
+          if (regexes.isNonWordRegex().test(w)) {
             currentItem.isLearned = true;
           }
 
@@ -89,15 +87,15 @@ export const useWordContentFunctions = () => {
   );
 
   const containsWords = useCallback(
-    (content: string) => regexes.containsWordRegex.test(content),
+    (content: string) => regexes.containsWordRegex().test(content),
     []
   );
 
   const fetchUrlContent = useCallback(
     async (url: string): Promise<{ name: string; content: string }> => {
-      const source = allowedUrlFetch.find((f) => f.regex.test(url));
+      const source = allowedSources.find((f) => f.regex().test(url));
       if (!source) {
-        throw new AppGenericError(`Url source is not allowed`);
+        throw new AppGenericError(`Url is not supported`);
       }
 
       const { data: html } = await axios.get<string>(url, {

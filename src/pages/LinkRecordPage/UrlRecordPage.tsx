@@ -4,11 +4,12 @@ import { useState, useCallback } from "react";
 import { useUIFeedback } from "../../app-context/useUIFeedback";
 import { PaginatedWords } from "../../components/PaginatedWords/PaginatedWords";
 import { RecordContent } from "../../components/RecordContent/RecordContent";
-import { useWordContentFunctions } from "../../core/useWordContentFunctions";
+import { useWordContentFunctions } from "../../core/word-content/useWordContentFunctions";
 import { useWordFunctions } from "../../core/useWordFunctions";
 import { Record } from "../../model.types";
 import { UrlRecordForm } from "./UrlRecordForm";
 import "./UrlRecordPage.scss";
+import { Link } from "@mui/joy";
 
 export const UrlRecordPage = () => {
   const { displayError } = useUIFeedback();
@@ -21,10 +22,10 @@ export const UrlRecordPage = () => {
   } | null>(null);
 
   const onGenerate = useCallback(
-    async (name: string, content: string) => {
+    async (name: string, content: string, source: string) => {
       try {
         const words = extractWords(content);
-        const record = await addTextRecord(name, content);
+        const record = await addTextRecord(name, content, source);
         setWordState({
           record,
           words,
@@ -56,6 +57,15 @@ export const UrlRecordPage = () => {
         {wordState && (
           <>
             <div className="page-form">
+              <h3>
+                <Link
+                  target="_blank"
+                  underline="always"
+                  href={wordState.record.source}
+                >
+                  {wordState.record.name}
+                </Link>
+              </h3>
               <Button startIcon={<ClearRounded />} onClick={onRemoveRecord}>
                 Delete record
               </Button>

@@ -7,13 +7,14 @@ import Typography from "@mui/joy/Typography";
 import { ChangeEvent, useCallback, useState } from "react";
 import { useUIFeedback } from "../../app-context/useUIFeedback";
 import { PasteButton } from "../../components/PasteButton";
-import { useWordContentFunctions } from "../../core/useWordContentFunctions";
+import { allowedSources } from "../../core/word-content/sources";
+import { useWordContentFunctions } from "../../core/word-content/useWordContentFunctions";
 import { useRefState } from "../../hooks/useRefState";
 
 export const UrlInput = ({
   onChange: submit,
 }: {
-  onChange: (name: string, content: string) => void;
+  onChange: (name: string, content: string, source: string) => void;
 }) => {
   const [urlValue, setUrlValue] = useState("");
   const [isFetching, setIsFetching] = useRefState(false);
@@ -26,7 +27,7 @@ export const UrlInput = ({
       setIsFetching(true);
       try {
         const { name, content } = await fetchUrlContent(url);
-        submit(name, content);
+        submit(name, content, url);
       } catch (error) {
         console.error(error);
         displayError(error);
@@ -62,16 +63,14 @@ export const UrlInput = ({
           Sources
         </Typography>
         <List aria-labelledby="decorated-list-demo">
-          <ListItem>
-            <ListItemDecorator>
-              <img
-                width="20px"
-                alt="genius"
-                src="https://assets.genius.com/images/apple-touch-icon.png?1709224724"
-              />
-            </ListItemDecorator>{" "}
-            Genius
-          </ListItem>
+          {allowedSources.map((item, i) => (
+            <ListItem key={i}>
+              <ListItemDecorator>
+                <img width="20px" alt={item.name} src={item.img} />
+              </ListItemDecorator>{" "}
+              {item.name}
+            </ListItem>
+          ))}
         </List>
       </div>
       <div className="mt-20 page-input-container">
@@ -79,13 +78,14 @@ export const UrlInput = ({
           className="page-input"
           placeholder="Enter url"
           tabIndex={-1}
-          // onBlur={() => onFetchUrlContent(urlValue)}
           variant="outlined"
           value={urlValue}
           onChange={onChangeUrlValue}
           endDecorator={
             <div className="flex">
-              <PasteButton onChange={onPaste}> </PasteButton>
+              <PasteButton disabled={isFetching} onChange={onPaste}>
+                {" "}
+              </PasteButton>
               <Button
                 onClick={() => onFetchUrlContent(urlValue)}
                 loading={isFetching}

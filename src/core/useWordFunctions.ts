@@ -6,7 +6,7 @@ import { useLearningCtxActions } from "../app-context/useLearningCtxActions";
 import { Record, RecordType } from "../model.types";
 import { AppGenericError } from "./types";
 import { useDatabase } from "./useDatabase";
-import { useWordContentFunctions } from "./useWordContentFunctions";
+import { useWordContentFunctions } from "./word-content/useWordContentFunctions";
 
 const toWords = (data?: { [key: Uuid]: string }) =>
   Object.entries(data ?? {}).reduce((prev, [id, w]) => {
@@ -86,7 +86,7 @@ export const useWordFunctions = () => {
   // );
 
   const addTextRecord = useCallback(
-    async (name: string, content: string): Promise<Record> => {
+    async (name: string, content: string, source?: string): Promise<Record> => {
       if (!containsWords(content)) {
         throw new AppGenericError("Content should contain words.");
       }
@@ -95,6 +95,7 @@ export const useWordFunctions = () => {
       //   type: RecordType.File,
       //   name,
       //   content,
+      //   source,
       // });
       // result.throwIfError("Could not add record");
 
@@ -102,6 +103,7 @@ export const useWordFunctions = () => {
         id: recordId,
         name,
         content,
+        source,
         type: RecordType.Text,
       };
     },

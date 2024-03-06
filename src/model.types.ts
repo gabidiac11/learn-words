@@ -8,4 +8,5 @@ export type Record = {
   type: RecordType,
   name: string;
   content: string;
+  source?: string;
 };
