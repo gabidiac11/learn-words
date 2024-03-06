@@ -1,13 +1,17 @@
 .record-content {
   padding-top: 25px;
   .record-content-txt {
-    padding: 20px;
-    max-width: calc(100vw - calc(var(--page-padding-h) * 2));
+    padding: 35px;
+    max-width: calc(100vw - var(--page-padding-h)* 2);
     overflow-x: auto;
     border: 1px solid rgba(0, 0, 0, 0.2);
     pre {
+      font-size: 1.15rem;
+      line-height: 1.6;
+      font-weight: 400;
       white-space: pre-wrap;
       word-wrap: break-word;
+      text-align: justify;
     }
   }
   .record-panel {

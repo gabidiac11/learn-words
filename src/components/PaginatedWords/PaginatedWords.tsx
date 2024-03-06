@@ -16,9 +16,9 @@ import { StarBorder, Star, Check as CheckIcon } from "@mui/icons-material";
 import { useIsElementInView } from "../../hooks/useIsElementInView";
 import { useIsElementFocused } from "../../hooks/useIsElementFocused";
 
-const pageOptions = [25, 50, 100, 150, 200, 250, 500, 1000, 1200, 1500].map(
-  (value) => ({ value })
-);
+const pageOptions = [
+  25, 50, 100, 150, 200, 250, 500, 1000, 1200, 1500, 1750, 2000, 2250, 2500,
+].map((value) => ({ value }));
 
 export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
   const [pagination, setPagination] = useState({
@@ -45,7 +45,9 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
   const [showToLearnOnly, setShowToLearnOnly] = useState(false);
 
   // prevent items disapearing from the list if filter is applied untill pagination is reseted by the user
-  const [sessionWords, setSessionWords] = useState<{[word:string]: true}>({});
+  const [sessionWords, setSessionWords] = useState<{ [word: string]: true }>(
+    {}
+  );
 
   const [numOfLearned, numOfUnknown] = useMemo(
     () =>
@@ -79,13 +81,15 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
 
     const satisfiesShowLearnOnly = showToLearnOnly
       ? (w: string) => !!wordsToLearn[w]
-      : () => true
+      : () => true;
     const satisfiesShowToLearn = showLearned
       ? () => true
       : (w: string) => !learnedWords[w];
 
     return words.filter(
-      ([w]) => sessionWords[w] || (satisfiesShowLearnOnly(w) && satisfiesShowToLearn(w))
+      ([w]) =>
+        sessionWords[w] ||
+        (satisfiesShowLearnOnly(w) && satisfiesShowToLearn(w))
     );
   }, [
     learnedWords,

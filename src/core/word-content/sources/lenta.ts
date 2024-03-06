@@ -22,7 +22,12 @@ export const lentaArticleSource = {
 
     return {
       name: parseTitle(html),
-      content: getPostParseElement(article).textContent ?? "empty",
+      content:
+        getPostParseElement(article, {
+          p: 2,
+          div: 1,
+          h: 2,
+        }).textContent ?? "empty",
     };
   },
 };
