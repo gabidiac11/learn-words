@@ -15,6 +15,11 @@ Lyrics / text to add:
 - srt from movies/series you known
 
 
-todo -> remove from history the data record
-todo -> auto name for add-text
-todo -> remove error after pasting in add-text
+TODO: -> remove from history the data record
+TODO: -> auto name for add-text
+TODO: -> remove error after pasting in add-text
+TODO: -> see what can be done about cors issues
+TODO: -> paste doesn't work firefox (maybe there is something to ask permission from user)
+TODO: -> add tampermonkey extension that takes the url as parameter redirects you to add url record
+TODO: -> add conditional rendering on scrolling for long contents (seems like in android doesn't have the power to render too much items)
+         maybe you can make render an empty div to manage that, maybe you can find some react pure component or something
