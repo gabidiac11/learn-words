@@ -7,8 +7,7 @@ import { LearningRecord } from "../model.types";
 import { AppGenericError } from "./types";
 import { useDatabase } from "./useDatabase";
 import {
-  containsWords,
-  nonWordRegexStr,
+  containsWords, generateRecordId,
 } from "./word-content/contentFunctions";
 
 const toWords = (data?: { [key: Uuid]: string }) =>
@@ -16,12 +15,6 @@ const toWords = (data?: { [key: Uuid]: string }) =>
     prev[w] = id;
     return prev;
   }, {} as Words);
-
-const generateRecordId = (name: string, timestamp: number) =>
-  `${timestamp}-${name
-    .slice(0, 20)
-    // eslint-disable-next-line no-useless-escape
-    .replace(new RegExp(`[${nonWordRegexStr}]`, "gi"), "_")}-${uuidv4()}`;
 
 export const useWordFunctions = () => {
   const { get, set, remove } = useDatabase();

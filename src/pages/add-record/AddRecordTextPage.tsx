@@ -45,13 +45,31 @@ export const AddRecordTextPage = () => {
     []
   );
 
-  const onChangeName = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
+  const onChangeName = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setErrors((p) => ({
       ...p,
       name: false,
     }));
     setName(e.target.value);
   }, []);
+
+  const onPaste = useCallback(
+    (value: string) => {
+      setContent(value);
+      if (!value) {
+        setErrors((p) => ({ ...p, content: false }));
+        return;
+      }
+
+      if (!name) {
+        setName(value.slice(0, 20));
+        setErrors({ name: false, content: false });
+      } else {
+        setErrors((p) => ({ ...p, content: false }));
+      }
+    },
+    [name]
+  );
 
   const onSubmit = useCallback(() => {
     setErrors({
@@ -81,7 +99,7 @@ export const AddRecordTextPage = () => {
             >
               Generate
             </Button>
-            <PasteButton onChange={(value) => setContent(value)} />
+            <PasteButton onChange={onPaste} />
           </div>
 
           <Textarea

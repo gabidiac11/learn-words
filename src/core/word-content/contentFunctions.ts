@@ -2,26 +2,21 @@ import axios from "axios";
 import { Words } from "../../app-context/types";
 import { allowedSources } from "./sources";
 import { AppGenericError, ContentSection } from "../types";
+import { uuidv4 } from "@firebase/util";
 
-// 
-/*
-TODO: see why \w doesn't match cyrilics
 
-Maybe try this:
-  const regex = /[\p{L}\p{N}_]/u;
-  console.log(regex.test('abc123_'));  // true
-  console.log(regex.test('абв123_'));  // true
-  console.log(regex.test('!?'));       // false
- */
-// Original regex: \«\#\$\%\^\&\*_\+\~@\!\?\.,\/\^\*;:{}=\-_`~()“”‘’'"\[\]\->:,\s\n\r\d\0
-export const nonWordRegexStr = `\\—\\«\\#\\$\\%\\^\\&\\*_\\+\\~@\\!\\?\\.,\\/\\^\\*;:{}=\\-_\`~\\(\\)“”‘’'"\\[\\]\\->:,\\s\\n\\r\\d\\0`;
+// base regex: /[\p{L}_]+/ug
 const regexes = {
-  splitRegex: () => new RegExp(`[${nonWordRegexStr}]+`, "i"),
-  classifiedRegex: () =>
-    new RegExp(`([${nonWordRegexStr}]+)|([^${nonWordRegexStr}]+)`, "gi"),
-  isNonWordRegex: () => new RegExp(`^[${nonWordRegexStr}]+$`),
-  containsWordRegex: () => new RegExp(`[^${nonWordRegexStr}]+`),
+  splitRegex: () => /[^\p{L}_]+/ui,
+  classifiedRegex: () => /([^\p{L}_]+)|([\p{L}_]+)/ugi,
+  isNonWordRegex: () => /^[^\p{L}_]+$/u,
+  containsWordRegex: () => /[\p{L}_]+/u,
 };
+
+export const generateRecordId = (name: string, timestamp: number) =>
+  `${timestamp}-${name
+    .slice(0, 20)
+    .replace(/[^\p{L}_]+/ugi, "_")}-${uuidv4()}`;
 
 export const extractWords = (content: string): [string, number][] => {
   const words = content
