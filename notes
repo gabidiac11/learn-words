@@ -15,9 +15,9 @@ Lyrics / text to add:
 - srt from movies/series you known
 
 
-TODO: -> remove from history the data record
-TODO: -> auto name for add-text
-TODO: -> remove error after pasting in add-text
+TODO: -> remove from react history the data record (on refresh it stays on even if deleted)
+TODO: -> auto generate name for add-text when name field is empty
+TODO: -> clear errors after pasting valid values in add-text
 TODO: -> see what can be done about cors issues
 TODO: -> paste doesn't work firefox (maybe there is something to ask permission from user)
 TODO: -> add tampermonkey extension that takes the url as parameter redirects you to add url record
