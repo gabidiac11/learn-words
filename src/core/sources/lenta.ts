@@ -1,4 +1,4 @@
-import { AppGenericError } from "../../types";
+import { AppGenericError } from "../types";
 import { parseHtml, parseTitle, getPostParseElement } from "./parseUtils";
 
 //Ex: https://lenta.ru/news/2024/03/06/v-odesse-proizoshla-seriya-vzryvov/

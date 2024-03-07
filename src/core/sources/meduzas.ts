@@ -1,4 +1,4 @@
-import { AppGenericError } from "../../types";
+import { AppGenericError } from "../types";
 import { parseHtml, parseTitle, getPostParseElement } from "./parseUtils";
 
 //Ex: https://meduza.io/feature/2024/03/05/vsu-pytayutsya-sderzhat-nastuplenie-voysk-rf-v-donetskoy-oblasti-po-rossiyskim-gorodam-ezdit-agitpoezd-sila-v-pravde

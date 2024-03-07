@@ -11,9 +11,9 @@ import List from "@mui/joy/List";
 import ListItem from "@mui/joy/ListItem";
 import ListItemDecorator from "@mui/joy/ListItemDecorator";
 import { PasteButton } from "../../components/PasteButton";
-import { allowedSources } from "../../core/word-content/sources";
+import { allowedSources } from "../../core/sources";
 import { useRefState } from "../../hooks/useRefState";
-import { fetchUrlContent } from "../../core/word-content/contentFunctions";
+import { fetchUrlContent } from "../../core/wordHelpers";
 
 import "./AddRecord.scss";
 

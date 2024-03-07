@@ -7,7 +7,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import "./RecordContent.scss";
 import { ClearRounded } from "@mui/icons-material";
 import { useUIFeedback } from "../../app-context/useUIFeedback";
-import { extractClassifiedContent } from "../../core/word-content/contentFunctions";
+import { extractClassifiedContent } from "../../core/wordHelpers";
 
 export const RecordContent = ({ content }: { content: string }) => {
   const { learnedWords } = useAppStateContext();

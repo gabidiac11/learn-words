@@ -8,7 +8,7 @@ import { PaginatedWords } from "../components/PaginatedWords/PaginatedWords";
 import { RecordContent } from "../components/RecordContent/RecordContent";
 import { AppGenericError } from "../core/types";
 import { useWordFunctions } from "../core/useWordFunctions";
-import { extractWords } from "../core/word-content/contentFunctions";
+import { extractWords } from "../core/wordHelpers";
 import { useRefState } from "../hooks/useRefState";
 import { LearningRecord } from "../model.types";
 import { getErrorMessage } from "../utils";

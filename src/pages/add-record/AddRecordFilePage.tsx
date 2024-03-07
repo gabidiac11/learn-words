@@ -4,7 +4,7 @@ import { useWordFunctions } from "../../core/useWordFunctions";
 import { AppFileInput } from "../../components/AppFileInput";
 import { AppGenericError, Extensions } from "../../core/types";
 import { Button as ButtonMat } from "@mui/material";
-import { readFile } from "../../core/word-content/contentFunctions";
+import { readFile } from "../../core/wordHelpers";
 import { useNavigate } from "react-router-dom";
 import { RocketLaunch } from "@mui/icons-material";
 

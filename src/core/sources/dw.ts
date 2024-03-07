@@ -1,4 +1,4 @@
-import { AppGenericError } from "../../types";
+import { AppGenericError } from "../types";
 import { parseHtml, parseTitle, getPostParseElement } from "./parseUtils";
 
 //Ex: https://www.dw.com/ru/cto-delat-tem-kto-rodilsa-29-fevrala-opyt-germanii/a-68405660

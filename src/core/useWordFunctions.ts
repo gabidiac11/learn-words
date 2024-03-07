@@ -8,7 +8,7 @@ import { AppGenericError } from "./types";
 import { useDatabase } from "./useDatabase";
 import {
   containsWords, generateRecordId,
-} from "./word-content/contentFunctions";
+} from "./wordHelpers";
 
 const toWords = (data?: { [key: Uuid]: string }) =>
   Object.entries(data ?? {}).reduce((prev, [id, w]) => {

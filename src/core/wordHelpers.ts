@@ -1,7 +1,7 @@
 import axios from "axios";
-import { Words } from "../../app-context/types";
+import { Words } from "../app-context/types";
 import { allowedSources } from "./sources";
-import { AppGenericError, ContentSection } from "../types";
+import { AppGenericError, ContentSection } from "./types";
 import { uuidv4 } from "@firebase/util";
 
 

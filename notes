@@ -18,9 +18,7 @@ DONE:
         TODO: -> fix regex match for symbols in cyrilics
         TODO: -> auto generate name for add-text when name field is empty
         TODO: -> remove from react history the data record (on refresh it stays on even if deleted)
-TODO: -> clear errors after pasting valid values in add-text
-TODO: -> see what can be done about cors issues
-TODO: -> paste doesn't work firefox (maybe there is something to ask permission from user)
+        TODO: -> clear errors after pasting valid values in add-text
 TODO: -> add tampermonkey extension that takes the url as parameter redirects you to add url record
         make a build script for this thing, it should use the url sources to match websites navigated
 TODO: -> manage ".m" sites, it should match mobile urls and make requests to the desktop ones
