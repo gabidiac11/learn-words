@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { ChangeEvent, useCallback, useState } from "react";
 import { useUIFeedback } from "../../app-context/useUIFeedback";
 import { useWordFunctions } from "../../core/useWordFunctions";
 import { AppFileInput } from "../../components/AppFileInput";
@@ -7,9 +7,9 @@ import { Button as ButtonMat } from "@mui/material";
 import { readFile } from "../../core/wordHelpers";
 import { useNavigate } from "react-router-dom";
 import { RocketLaunch } from "@mui/icons-material";
+import { Input, Textarea } from "@mui/joy";
 
 import "./AddRecord.scss";
-import { Textarea } from "@mui/joy";
 
 const allowedExtensions = [Extensions.Srt, Extensions.Txt];
 
@@ -20,13 +20,26 @@ export const AddRecordFilePage = () => {
 
   const [wordState, setWordState] = useState<{
     fileName: string;
+    name: string;
     content: string;
   } | null>(null);
 
+  const [errors, setErrors] = useState({
+    name: false,
+    content: false,
+  });
+
   const onGenerate = useCallback(async () => {
     try {
+      setErrors({
+        content: !wordState,
+        name: !wordState?.name
+      });
+
       if (!wordState) throw new AppGenericError("File not selected.");
-      const record = await addRecord(wordState.fileName, wordState.content);
+      if (!wordState.name) throw new AppGenericError("Empty name.");
+
+      const record = await addRecord(wordState.name, wordState.content);
       navigate(`/records/${record.id}`, { state: record });
     } catch (error) {
       console.error(error);
@@ -38,8 +51,13 @@ export const AddRecordFilePage = () => {
     async (file: File) => {
       try {
         const content = await readFile(file);
+        setErrors((p) => ({
+          ...p,
+          name: false,
+        }));
         setWordState({
           fileName: file.name,
+          name: file.name,
           content,
         });
       } catch (error) {
@@ -53,6 +71,21 @@ export const AddRecordFilePage = () => {
   const onRemoveRecord = useCallback(async () => {
     setWordState(null);
   }, []);
+
+  const onChangeName = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      if (!wordState) {
+        displayError("File not selected.");
+        return;
+      }
+      setErrors((p) => ({
+        ...p,
+        name: false,
+      }));
+      setWordState({ ...wordState, name: e.target.value });
+    },
+    [displayError, wordState]
+  );
 
   return (
     <div className="view page-wrapper add-record-page">
@@ -76,6 +109,17 @@ export const AddRecordFilePage = () => {
             onRemove={onRemoveRecord}
           />
         </div>
+
+        {wordState && (
+          <div className="mb-20 page-input-container">
+            <Input
+              error={errors.name}
+              onChange={onChangeName}
+              value={wordState.name}
+              placeholder="Enter name"
+            />
+          </div>
+        )}
 
         {wordState && (
           <div className="mb-20 page-input-container">
