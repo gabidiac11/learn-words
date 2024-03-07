@@ -4,19 +4,18 @@ import { allowedSources } from "./sources";
 import { AppGenericError, ContentSection } from "./types";
 import { uuidv4 } from "@firebase/util";
 
-
 // base regex: /[\p{L}_]+/ug
 const regexes = {
-  splitRegex: () => /[^\p{L}_]+/ui,
-  classifiedRegex: () => /([^\p{L}_]+)|([\p{L}_]+)/ugi,
+  splitRegex: () => /[^\p{L}_]+/iu,
+  classifiedRegex: () => /([^\p{L}_]+)|([\p{L}_]+)/giu,
   isNonWordRegex: () => /^[^\p{L}_]+$/u,
   containsWordRegex: () => /[\p{L}_]+/u,
 };
 
+const getDesktopSite = (url: string) => url.replace("https://m.", "https://");
+
 export const generateRecordId = (name: string, timestamp: number) =>
-  `${timestamp}-${name
-    .slice(0, 20)
-    .replace(/[^\p{L}_]+/ugi, "_")}-${uuidv4()}`;
+  `${timestamp}-${name.slice(0, 20).replace(/[^\p{L}_]+/giu, "_")}-${uuidv4()}`;
 
 export const extractWords = (content: string): [string, number][] => {
   const words = content
@@ -92,12 +91,16 @@ export const containsWords = (content: string) =>
 export const fetchUrlContent = async (
   url: string
 ): Promise<{ name: string; content: string }> => {
-  const source = allowedSources.find((f) => f.regex().test(url));
+  if (!url) throw new AppGenericError("Empty url.");
+
+  const desktopUrl = getDesktopSite(url);
+  console.log({ desktopUrl });
+  const source = allowedSources.find((f) => f.regex().test(desktopUrl));
   if (!source) {
     throw new AppGenericError(`Url is not supported`);
   }
 
-  const { data: html } = await axios.get<string>(url, {
+  const { data: html } = await axios.get<string>(desktopUrl, {
     headers: {
       "Content-Type": "text/html",
     },
