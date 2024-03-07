@@ -5,7 +5,7 @@ import { BrowserRouter, useLocation, useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import { useAuthInit } from "./auth/authHooks";
 import { LoaderView } from "./components/Loader";
-import { FileRecordPage } from "./pages/FileRecordPage";
+import { AddRecordFilePage } from "./pages/add-record/AddRecordFilePage";
 import Header from "./components/Header/Header";
 import { LearnedWordsPage } from "./pages/LearnedWordsPage";
 import { WordsToLearnPage } from "./pages/WordsToLearnPage";
@@ -13,9 +13,10 @@ import { routes as r } from "./routes";
 import { WithInitialization } from "./components/WithInitialization";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorBoundaryFallback } from "./components/ErrorBoundaryFallback";
-import { TextRecordPage } from "./pages/TextRecordPage";
+import { AddRecordTextPage } from "./pages/add-record/AddRecordTextPage";
 import { NotFound } from "./pages/NotFound";
-import { UrlRecordPage } from "./pages/LinkRecordPage/UrlRecordPage";
+import { AddRecordUrlPage } from "./pages/add-record/AddRecordUrlPage";
+import { RecordPage } from "./pages/RecordPage";
 
 function App() {
   const { user, isVerifying } = useAuthInit();
@@ -40,9 +41,10 @@ function App() {
                   path={r.WordsToLearn.path}
                   element={<WordsToLearnPage />}
                 />
-                <Route path={r.File.path} element={<FileRecordPage />} />
-                <Route path={r.Text.path} element={<TextRecordPage />} />
-                <Route path={r.Link.path} element={<UrlRecordPage />} />
+                <Route path={r.File.path} element={<AddRecordFilePage />} />
+                <Route path={r.Text.path} element={<AddRecordTextPage />} />
+                <Route path={r.Url.path} element={<AddRecordUrlPage />} />
+                <Route path={r.Record.path} element={<RecordPage />} />
                 <Route path={"/404"} element={<NotFound />} />
                 <Route
                   path="*"

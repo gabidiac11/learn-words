@@ -14,6 +14,7 @@ export const AppSnackbar = () => {
           open={true}
           autoHideDuration={snack.autoHideDuration ?? 3000}
           onClose={() => removeSnack(snack.key)}
+          anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
         >
           <Alert
             onClose={() => removeSnack(snack.key)}

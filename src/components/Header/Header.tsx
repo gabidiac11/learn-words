@@ -33,7 +33,7 @@ const links = [
     icon: <TextIncrease htmlColor="white" className="outline-none" />,
   },
   {
-    path: routes.Link.path,
+    path: routes.Url.path,
     icon: <AddLink htmlColor="white" className="outline-none" />,
   },
 ];

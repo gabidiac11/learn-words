@@ -12,16 +12,20 @@ export const routes = {
     title: "Words to learn",
   },
   File: {
-    path: "/file",
+    path: "/add-file",
     title: "Upload file",
   },
   Text: {
-    path: "/text",
+    path: "/add-text",
     title: "Insert record",
   },
-  Link: {
-    path: "/link",
-    title: "Add link",
+  Url: {
+    path: "/add-url",
+    title: "Add url",
+  },
+  Record: {
+    path: "/records/:id",
+    title: "Add record",
   },
   Login: {
     path: "/login",

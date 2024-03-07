@@ -224,7 +224,7 @@ $array: 5, 10, 15, 20, 25, 40;
   }
 
   .pb-#{$dim} {
-    padding: #{$dim}px!important;
+    padding-bottom: #{$dim}px!important;
   }
   .pl-#{$dim} {
     padding-left: #{$dim}px!important;

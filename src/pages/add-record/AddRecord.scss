@@ -1,16 +1,18 @@
 .url-record-page {
+  button.paste-btn {
+    padding: 0;
+    margin: 0;
+    min-width: auto;
+  }
+}
+
+.add-record-page {
   width: 100%;
   .page-input-container,
   .page-input-container,
   .page-input {
     width: 100%;
   }
-  button.paste-btn {
-    padding: 0;
-    margin: 0;
-    min-width: auto;
-  }
-
   textarea {
     text-align: justify;
     padding: 0 25px 0 10px;

@@ -3,10 +3,10 @@ import { useCallback } from "react";
 import { Uuid, Words } from "../app-context/types";
 import { useAppStateContext } from "../app-context/useAppState";
 import { useLearningCtxActions } from "../app-context/useLearningCtxActions";
-import { Record, RecordType } from "../model.types";
+import { LearningRecord } from "../model.types";
 import { AppGenericError } from "./types";
 import { useDatabase } from "./useDatabase";
-import { useWordContentFunctions } from "./word-content/useWordContentFunctions";
+import { containsWords } from "./word-content/contentFunctions";
 
 const toWords = (data?: { [key: Uuid]: string }) =>
   Object.entries(data ?? {}).reduce((prev, [id, w]) => {
@@ -24,7 +24,6 @@ export const useWordFunctions = () => {
   const { get, set, remove } = useDatabase();
   const { setLearnedWords, setWordsToLearn } = useLearningCtxActions();
   const { learnedWords, wordsToLearn } = useAppStateContext();
-  const { containsWords } = useWordContentFunctions();
 
   const initLearnedWords = useCallback(async (): Promise<any> => {
     const result = await get<{ [key: Uuid]: string }>(`learned-words`);
@@ -85,29 +84,23 @@ export const useWordFunctions = () => {
   //   [update, wordsToLearn]
   // );
 
-  const addTextRecord = useCallback(
-    async (name: string, content: string, source?: string): Promise<Record> => {
+  const addRecord = useCallback(
+    async (name: string, content: string, source?: string): Promise<LearningRecord> => {
       if (!containsWords(content)) {
         throw new AppGenericError("Content should contain words.");
       }
-      const recordId = generateRecordId(name);
-      // const result = await set(`records/${recordId}`, {
-      //   type: RecordType.File,
-      //   name,
-      //   content,
-      //   source,
-      // });
-      // result.throwIfError("Could not add record");
 
-      return {
+      const recordId = generateRecordId(name);
+      const record: LearningRecord = {
         id: recordId,
         name,
         content,
+        timestamp: Date.now(),
         source,
-        type: RecordType.Text,
       };
+      return record;
     },
-    [containsWords]
+    []
   );
 
   const removeRecord = useCallback(
@@ -174,12 +167,22 @@ export const useWordFunctions = () => {
     },
     [remove, setWordsToLearn, wordsToLearn]
   );
+  
+  const getRecord = useCallback(async (recordId: string): Promise<LearningRecord> => {
+    const result = await get<LearningRecord>(`records/${recordId}`);
+    result.throwIfError("Could not get learned words");
+    if(!result.data) {
+      throw new AppGenericError("Could not find record.");
+    }
+    return result.data;
+  }, [get]);
 
   return {
     initLearnedWords,
     initWordsToLearn,
 
-    addTextRecord,
+    addRecord,
+    getRecord,
     removeRecord,
 
     addLearnedWord,

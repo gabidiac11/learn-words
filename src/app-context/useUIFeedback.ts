@@ -40,18 +40,19 @@ export const useUIFeedback = () => {
     [addSnack]
   );
 
-  const addSuccess = useCallback(
+  const displaySuccess = useCallback(
     (message: string) =>
       addSnack({
         message,
         severity: "success",
+        autoHideDuration: 4000
       }),
     [addSnack]
   );
 
   return {
     displayError,
-    addSuccess,
+    displaySuccess,
     removeSnack,
   };
 };

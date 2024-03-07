@@ -19,21 +19,9 @@
         "name-ref-1-${id1}": {
           "name": "name1",
           "content": "bla bla",
-          "type": "srt",
+          "timestamp": 4543543,
+          "source": "https://bla-bla"
         },
-        "name-ref-2-${id2}": {
-          "name": "name1",
-          "type": "link-article",
-        },
-        "name-ref-3-${id3}": {
-          "name": "name1",
-          "type": "link-yt",
-        },
-        "name-ref-3-${id3}": {
-          "name": "name1",
-          "content": "bla bla",
-          "type": "text",
-        }
       },
     }
   }
