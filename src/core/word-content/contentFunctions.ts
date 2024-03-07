@@ -3,8 +3,18 @@ import { Words } from "../../app-context/types";
 import { allowedSources } from "./sources";
 import { AppGenericError, ContentSection } from "../types";
 
+// 
+/*
+TODO: see why \w doesn't match cyrilics
+
+Maybe try this:
+  const regex = /[\p{L}\p{N}_]/u;
+  console.log(regex.test('abc123_'));  // true
+  console.log(regex.test('абв123_'));  // true
+  console.log(regex.test('!?'));       // false
+ */
 // Original regex: \«\#\$\%\^\&\*_\+\~@\!\?\.,\/\^\*;:{}=\-_`~()“”‘’'"\[\]\->:,\s\n\r\d\0
-const nonWordRegexStr = `\\—\\«\\#\\$\\%\\^\\&\\*_\\+\\~@\\!\\?\\.,\\/\\^\\*;:{}=\\-_\`~\\(\\)“”‘’'"\\[\\]\\->:,\\s\\n\\r\\d\\0`;
+export const nonWordRegexStr = `\\—\\«\\#\\$\\%\\^\\&\\*_\\+\\~@\\!\\?\\.,\\/\\^\\*;:{}=\\-_\`~\\(\\)“”‘’'"\\[\\]\\->:,\\s\\n\\r\\d\\0`;
 const regexes = {
   splitRegex: () => new RegExp(`[${nonWordRegexStr}]+`, "i"),
   classifiedRegex: () =>

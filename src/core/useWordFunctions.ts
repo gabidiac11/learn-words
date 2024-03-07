@@ -6,7 +6,10 @@ import { useLearningCtxActions } from "../app-context/useLearningCtxActions";
 import { LearningRecord } from "../model.types";
 import { AppGenericError } from "./types";
 import { useDatabase } from "./useDatabase";
-import { containsWords } from "./word-content/contentFunctions";
+import {
+  containsWords,
+  nonWordRegexStr,
+} from "./word-content/contentFunctions";
 
 const toWords = (data?: { [key: Uuid]: string }) =>
   Object.entries(data ?? {}).reduce((prev, [id, w]) => {
@@ -14,11 +17,11 @@ const toWords = (data?: { [key: Uuid]: string }) =>
     return prev;
   }, {} as Words);
 
-const generateRecordId = (name: string) =>
-  `${name
+const generateRecordId = (name: string, timestamp: number) =>
+  `${timestamp}-${name
     .slice(0, 20)
     // eslint-disable-next-line no-useless-escape
-    .replace(/[\.\#\$\/\[\]\s]/g, "_")}-${uuidv4()}`;
+    .replace(new RegExp(`[${nonWordRegexStr}]`, "gi"), "_")}-${uuidv4()}`;
 
 export const useWordFunctions = () => {
   const { get, set, remove } = useDatabase();
@@ -85,22 +88,31 @@ export const useWordFunctions = () => {
   // );
 
   const addRecord = useCallback(
-    async (name: string, content: string, source?: string): Promise<LearningRecord> => {
+    async (
+      name: string,
+      content: string,
+      source?: string
+    ): Promise<LearningRecord> => {
       if (!containsWords(content)) {
         throw new AppGenericError("Content should contain words.");
       }
 
-      const recordId = generateRecordId(name);
+      const timestamp = Date.now();
+      const recordId = generateRecordId(name, timestamp);
       const record: LearningRecord = {
         id: recordId,
         name,
         content,
-        timestamp: Date.now(),
+        timestamp,
         source,
       };
+
+      const result = await set(`records/${recordId}`, record);
+      result.throwIfError("Could not add record");
+
       return record;
     },
-    []
+    [set]
   );
 
   const removeRecord = useCallback(
@@ -167,15 +179,18 @@ export const useWordFunctions = () => {
     },
     [remove, setWordsToLearn, wordsToLearn]
   );
-  
-  const getRecord = useCallback(async (recordId: string): Promise<LearningRecord> => {
-    const result = await get<LearningRecord>(`records/${recordId}`);
-    result.throwIfError("Could not get learned words");
-    if(!result.data) {
-      throw new AppGenericError("Could not find record.");
-    }
-    return result.data;
-  }, [get]);
+
+  const getRecord = useCallback(
+    async (recordId: string): Promise<LearningRecord> => {
+      const result = await get<LearningRecord>(`records/${recordId}`);
+      result.throwIfError("Could not get learned words");
+      if (!result.data) {
+        throw new AppGenericError("Could not find record.");
+      }
+      return result.data;
+    },
+    [get]
+  );
 
   return {
     initLearnedWords,
