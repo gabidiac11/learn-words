@@ -1,7 +1,7 @@
 import { ClearRounded } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useUIFeedback } from "../app-context/useUIFeedback";
 import { Loader } from "../components/Loader";
 import { PaginatedWords } from "../components/PaginatedWords/PaginatedWords";
@@ -13,10 +13,13 @@ import { useRefState } from "../hooks/useRefState";
 import { LearningRecord } from "../model.types";
 import { getErrorMessage } from "../utils";
 import { Link } from "@mui/joy";
+import { routes } from "../routes";
 
 export const RecordPage = () => {
   const { displayError, displaySuccess } = useUIFeedback();
   const { state: locationState } = useLocation();
+  const navigate = useNavigate();
+
   const { id } = useParams();
   const { removeRecord } = useWordFunctions();
 
@@ -27,10 +30,13 @@ export const RecordPage = () => {
   const [loading, setLoading] = useRefState(true);
   const [error, setError] = useState<string>();
 
-  const [deleted, setDeleted] = useState(false);
+  const [deleted, setDeleted] = useRefState(false);
 
   const initialize = useCallback(async () => {
     try {
+      if (deleted) {
+        return;
+      }
       setLoading(true);
       if (!id) {
         throw new AppGenericError("Record not found.");
@@ -39,6 +45,9 @@ export const RecordPage = () => {
       let r = locationState as LearningRecord;
       if (!r?.id) {
         r = await getRecord(id);
+      } else if ((locationState as { deleted: true }).deleted === true) {
+        setDeleted(true);
+        return;
       }
       setWords(extractWords(r.content));
       setRecord(r);
@@ -49,7 +58,15 @@ export const RecordPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [displayError, getRecord, id, locationState, setLoading]);
+  }, [
+    deleted,
+    displayError,
+    getRecord,
+    id,
+    locationState,
+    setDeleted,
+    setLoading,
+  ]);
 
   const onRemoveRecord = useCallback(async () => {
     try {
@@ -60,11 +77,24 @@ export const RecordPage = () => {
       setDeleted(true);
       setWords(undefined);
       setRecord(undefined);
+      navigate(routes.Record.path.replace(":id", record.id), {
+        replace: true,
+        state: {
+          deleted: true,
+        },
+      });
     } catch (error) {
       console.error(error);
       displayError(error);
     }
-  }, [displayError, displaySuccess, record, removeRecord]);
+  }, [
+    displayError,
+    displaySuccess,
+    navigate,
+    record,
+    removeRecord,
+    setDeleted,
+  ]);
 
   useEffect(() => {
     initialize();

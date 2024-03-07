@@ -26,7 +26,6 @@ export const AddRecordFilePage = () => {
   const onGenerate = useCallback(async () => {
     try {
       if (!wordState) throw new AppGenericError("File not selected.");
-      console.trace("m");
       const record = await addRecord(wordState.fileName, wordState.content);
       navigate(`/records/${record.id}`, { state: record });
     } catch (error) {

@@ -29,7 +29,6 @@ export const uraArticleSource = {
     ].forEach((node) => {
       node?.parentNode?.removeChild(node);
     });
-    console.log(article.innerHTML);
     return {
       name: parseTitle(html),
       content: getPostParseElement(article).textContent ?? "empty",
