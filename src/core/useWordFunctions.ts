@@ -6,9 +6,7 @@ import { useLearningCtxActions } from "../app-context/useLearningCtxActions";
 import { LearningRecord } from "../model.types";
 import { AppGenericError } from "./types";
 import { useDatabase } from "./useDatabase";
-import {
-  containsWords, generateRecordId,
-} from "./wordHelpers";
+import { containsWords, generateRecordId } from "./wordHelpers";
 
 const toWords = (data?: { [key: Uuid]: string }) =>
   Object.entries(data ?? {}).reduce((prev, [id, w]) => {
@@ -176,14 +174,22 @@ export const useWordFunctions = () => {
   const getRecord = useCallback(
     async (recordId: string): Promise<LearningRecord> => {
       const result = await get<LearningRecord>(`records/${recordId}`);
-      result.throwIfError("Could not get learned words");
+      result.throwIfError("Could not get record");
       if (!result.data) {
-        throw new AppGenericError("Could not find record.");
+        throw new AppGenericError("Could not find record");
       }
       return result.data;
     },
     [get]
   );
+
+  const getRecords = useCallback(async (): Promise<LearningRecord[]> => {
+    const result = await get<{ [id: string]: LearningRecord }>(`records`);
+    result.throwIfError("Could not get records");
+
+    if (!result.data) return [];
+    return Object.values(result.data).reverse();
+  }, [get]);
 
   return {
     initLearnedWords,
@@ -191,6 +197,7 @@ export const useWordFunctions = () => {
 
     addRecord,
     getRecord,
+    getRecords,
     removeRecord,
 
     addLearnedWord,

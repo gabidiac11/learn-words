@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import Home from "./pages/Home";
+import Records from "./pages/records/RecordsPage";
 import Login from "./auth/Login";
 import { BrowserRouter, useLocation, useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
@@ -7,9 +7,8 @@ import { useAuthInit } from "./auth/authHooks";
 import { LoaderView } from "./components/Loader";
 import { AddRecordFilePage } from "./pages/add-record/AddRecordFilePage";
 import Header from "./components/Header/Header";
-import { LearnedWordsPage } from "./pages/LearnedWordsPage";
 import { WordsToLearnPage } from "./pages/WordsToLearnPage";
-import { routes as r } from "./routes";
+import { routes as r, routes } from "./routes";
 import { WithInitialization } from "./components/WithInitialization";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorBoundaryFallback } from "./components/ErrorBoundaryFallback";
@@ -32,11 +31,7 @@ function App() {
             <WithInitialization>
               <Header />
               <Routes>
-                <Route path={r.Home.path} element={<Home />} />
-                <Route
-                  path={r.LearnedWords.path}
-                  element={<LearnedWordsPage />}
-                />
+                <Route path={r.Records.path} element={<Records />} />
                 <Route
                   path={r.WordsToLearn.path}
                   element={<WordsToLearnPage />}
@@ -81,7 +76,7 @@ const DefaultRouteRedirection = (props: { isAuth: boolean }) => {
       location.pathname === "/" ||
       !location.pathname
     ) {
-      navigate("/home", { replace: true });
+      navigate(routes.Records.path, { replace: true });
     } else {
       navigate("/404", { replace: true });
     }

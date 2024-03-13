@@ -1,0 +1,25 @@
+.record-item {
+  .record-card {
+    width: 320px;
+    max-width: 100%;
+    @media only screen and (max-width: 350px) {
+        width: 100%;
+    }
+    .record-name {
+      text-align: left;
+    }
+    img {
+      width: 15px;
+      height: 15px;
+    }
+  }
+}
+
+.records-container {
+  .app-dropdown-btn {
+    color: var(--app-primary-color);
+    svg: {
+      color: var(--app-primary-color);
+    }
+  }
+}

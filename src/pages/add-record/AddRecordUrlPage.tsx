@@ -23,6 +23,7 @@ export const AddRecordUrlPage = () => {
   const navigate = useNavigate();
 
   const [urlValue, setUrlValue] = useState("");
+  const [desktopUrl, setDesktopUrl] = useState("");
   const [urlFetched, setUrlFetched] = useState("");
 
   const [name, setName] = useState("");
@@ -95,14 +96,23 @@ export const AddRecordUrlPage = () => {
       return;
     }
 
-    onGenerate(name, content, urlValue);
-  }, [name, content, urlFetched, urlValue, onGenerate, displayError]);
+    onGenerate(name, content, desktopUrl);
+  }, [
+    name,
+    content,
+    urlFetched,
+    urlValue,
+    onGenerate,
+    desktopUrl,
+    displayError,
+  ]);
 
   const onFetchUrlContent = useCallback(
     async (url: string) => {
       setIsFetching(true);
       try {
-        const { name, content } = await fetchUrlContent(url);
+        const { name, content, url: desktopUrl } = await fetchUrlContent(url);
+        setDesktopUrl(desktopUrl);
         setUrlFetched(url);
         setName(name);
         setContent(content);

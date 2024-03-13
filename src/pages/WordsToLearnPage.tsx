@@ -1,38 +1,36 @@
-import { Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Words } from "../app-context/types";
 import { useAppStateContext } from "../app-context/useAppState";
+import { PaginatedWords } from "../components/PaginatedWords/PaginatedWords";
 
 export const WordsToLearnPage = () => {
-  const { wordsToLearn: wordsToLearnObj } = useAppStateContext();
-  const wordsToLearn = Object.keys(wordsToLearnObj);
-  
+  const { wordsToLearn } = useAppStateContext();
+  const [words, setWords] = useState<[string, undefined][]>([]);
+
+  useEffect(() => {
+    setWords((oldWords) => {
+      const joinedWithRemoved = {
+        ...wordsToLearn,
+        ...oldWords.reduce((prev, [w]) => {
+          if (!wordsToLearn[w]) {
+            prev[w] = "empty-id";
+          }
+          return prev;
+        }, {} as Words),
+      };
+      return Object.keys(joinedWithRemoved).sort((a,b) => a > b ? 1 : -1).map((w) => [w, undefined]) as [
+        string,
+        undefined
+      ][];
+    });
+  }, [wordsToLearn]);
   return (
     <div className="view page-wrapper">
-      <Typography
-        variant="h1"
-        noWrap
-        tabIndex={0}
-        component="div"
-        style={{ lineHeight: "50px", paddingRight: "10px" }}
-        sx={{ display: { xs: "none", sm: "block" } }}
-      >
-        Words to learn
-      </Typography>
+      <div>
+        <h3>Words to learn</h3>
+      </div>
       <div className="view-content view-items">
-        {wordsToLearn.map((w, i) => (
-          <Typography
-            key={i}
-            variant="h5"
-            noWrap
-            tabIndex={0}
-            component="div"
-            style={{ lineHeight: "50px", paddingRight: "10px" }}
-            sx={{ display: { xs: "none", sm: "block" } }}
-          >
-            {w}
-          </Typography>
-        ))}
-
-        {wordsToLearn.length === 0 && <div>No words.</div>}
+        <PaginatedWords words={words} />
       </div>
     </div>
   );

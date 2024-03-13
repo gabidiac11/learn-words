@@ -5,6 +5,10 @@ import {
   set as firebaseSet,
   update as firebaseUpdate,
   remove as firebaseRemove,
+  query,
+  startAt,
+  limitToLast,
+  orderByKey,
 } from "@firebase/database";
 import Result, { AppGenericError } from "./types";
 import { log } from "./logger";
@@ -58,6 +62,50 @@ export const useDatabase = () => {
     [db, decoratedPath]
   );
 
+  const getFiltered = useCallback(
+    async <T>(
+      path: string,
+      filter: {
+        start: number;
+        limitToLast: number;
+      }
+    ): Promise<Result<T[]>> => {
+      const time = Date.now();
+      log(`\nDB_GET_FILTERED: '${decoratedPath(path)}': [STARTED]`, { filter });
+      try {
+        const n  = query(ref(db, decoratedPath(path)), orderByKey());
+        const myQuery = query(n,
+          startAt(1),
+          // limitToLast(filter.limitToLast),
+          // startAt(null, `1709772099098-Разговоры_о_важном__-30d32f3e-4b15-4a85-945f-17096226be56`),
+          // limitToFirst(1),
+          startAt(0),
+          limitToLast(4)
+        );
+        const snapshot = await firebaseGet(myQuery);
+        const value = snapshot.val() as T[];
+        console.log({ value });
+
+        return Result.Success(value);
+      } catch (error) {
+        log(
+          `[DB_GET_FILTERED]: error occured at path '${decoratedPath(path)}'`,
+          getStringifiedError(error)
+        );
+        return Result.Error(
+          new AppGenericError("Something went wrong.", error)
+        );
+      } finally {
+        log(
+          `DB_GET_FILTERED: '${decoratedPath(path)}': [FINISHED] at ${
+            (Date.now() - time) / 1000
+          }s\n`
+        );
+      }
+    },
+    [db, decoratedPath]
+  );
+
   const getArray = useCallback(
     async <T>(path: string): Promise<Result<T[]>> => {
       const result = await get<{ [key: string]: T }>(path);
@@ -69,8 +117,10 @@ export const useDatabase = () => {
             throw Result.ErrorMessage("Something is wrong with data indexing");
           }
           const index = Number(indexStr);
-          if(index < 0) {
-            throw Result.ErrorMessage(`Something is wrong with data indexing: invalid index: ${index}`);
+          if (index < 0) {
+            throw Result.ErrorMessage(
+              `Something is wrong with data indexing: invalid index: ${index}`
+            );
           }
           array[Number(index)] = value;
           return array;
@@ -189,5 +239,6 @@ export const useDatabase = () => {
     update,
     remove,
     exists,
+    getFiltered
   };
 };

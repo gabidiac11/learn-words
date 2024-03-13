@@ -1,13 +1,9 @@
 body {
   --page-padding-h: 30px;
+  --app-primary-color: rgb(11, 107, 203);
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
 }
 
 body {
@@ -19,7 +15,7 @@ body {
 // set font family
 // quick and dirty solution
 body * {
-  font-family: "Trebuchet MS", sans-serif !important;
+  font-family: PF Regal, PF Regal Text Pro, Georgia, serif !important;
 }
 
 body * {
@@ -125,6 +121,16 @@ button {
       opacity: 1;
     }
   }
+  &.emphasized {
+    svg {
+      fill: rgb(143, 0, 0);
+    }
+    &:hover:not(:disabled) {
+      svg {
+        fill: rgb(87, 2, 2);
+      }
+    }
+  }
 }
 
 .view {
@@ -208,35 +214,35 @@ button {
   align-items: center;
 }
 
-$array: 5, 10, 15, 20, 25, 40;
+$array: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 40;
 @each $dim in $array {
   .ml-#{$dim} {
-    margin-left: #{$dim}px!important;
+    margin-left: #{$dim}px !important;
   }
   .mr-#{$dim} {
-    margin-right: #{$dim}px!important;
+    margin-right: #{$dim}px !important;
   }
   .mb-#{$dim} {
-    margin-bottom: #{$dim}px!important;
+    margin-bottom: #{$dim}px !important;
   }
   .mt-#{$dim} {
-    padding-top: #{$dim}px!important;
+    padding-top: #{$dim}px !important;
   }
 
   .pb-#{$dim} {
-    padding-bottom: #{$dim}px!important;
+    padding-bottom: #{$dim}px !important;
   }
   .pl-#{$dim} {
-    padding-left: #{$dim}px!important;
+    padding-left: #{$dim}px !important;
   }
   .pr-#{$dim} {
-    padding-right: #{$dim}px!important;
+    padding-right: #{$dim}px !important;
   }
   .pt-#{$dim} {
-    padding-top: #{$dim}px!important;
+    padding-top: #{$dim}px !important;
   }
   .p-#{$dim} {
-    padding: #{$dim}px!important;
+    padding: #{$dim}px !important;
   }
 }
 
@@ -262,4 +268,25 @@ $array: 5, 10, 15, 20, 25, 40;
   flex-wrap: nowrap;
   flex-direction: column;
   align-items: flex-start;
+}
+
+a.no-anchor {
+  /* Remove underline */
+  text-decoration: none;
+
+  /* Remove default color */
+  color: inherit;
+
+  /* Remove default outline */
+  outline: none;
+
+  /* Remove default padding and margin */
+  padding: 0;
+  margin: 0;
+
+  /* Remove default font styles */
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
 }

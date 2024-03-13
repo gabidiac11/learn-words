@@ -1,0 +1,116 @@
+.paginated-results {
+  margin: 0px;
+  padding: 0;
+  border-radius: 10px;
+  background-color: white;
+
+  .word-list-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-bottom: 20px;
+    > * {
+      margin-top: 20px;
+    }
+  }
+
+  .word-header-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    > * {
+      margin-bottom: 10px;
+    }
+  }
+  .pagination-size,
+  .pagination button .totals-info {
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.4375em;
+    letter-spacing: 0.00938em;
+  }
+  .totals-info {
+    white-space: nowrap;
+  }
+  .pagination-sticky {
+    width: 100vw;
+    background-color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    padding: 20px var(--page-padding-h) 0 var(--page-padding-h);
+    filter: drop-shadow(4px 6px 20px rgba(0, 0, 0, 0.07));
+
+    .pagination-sticky-inner {
+      display: flex;
+      justify-content: center;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      padding-bottom: 20px;
+    }
+  }
+
+  .paginated-items {
+    display: flex;
+    flex-wrap: wrap;
+    width: auto;
+    justify-content: flex-start;
+    position: relative;
+    margin-top: 20px;
+    .pagination-loader {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      min-height: 100%;
+      padding: 20px 100px;
+    }
+
+    @media only screen and (max-width: 850px) {
+      justify-content: center;
+    }
+  }
+  .item-container {
+    padding: 10px;
+  }
+
+  .btn-word-add {
+    background-color: transparent;
+    border-radius: 0;
+    padding: 0.5rem 0.1rem;
+    display: block;
+    color: inherit;
+    border: none;
+    cursor: pointer;
+    outline: inherit;
+    svg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+  .btn-action {
+    svg {
+      fill: rgb(165, 165, 165);
+    }
+  }
+  .btn-action:hover {
+    svg {
+      fill: black;
+    }
+  }
+  .btn-action.btn-active {
+    svg {
+      fill: rgb(143, 0, 0);
+    }
+  }
+  .btn-action.btn-active:hover:not(:disabled) {
+    svg {
+      fill: rgb(87, 2, 2);
+    }
+  }
+  .word-filter-checkbox {
+    padding: 0 1.5rem;
+  }
+}

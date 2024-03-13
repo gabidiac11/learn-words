@@ -20,7 +20,7 @@ const pageOptions = [
   25, 50, 100, 150, 200, 250, 500, 1000, 1200, 1500, 1750, 2000, 2250, 2500,
 ].map((value) => ({ value }));
 
-export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
+export const PaginatedWords = ({ words }: { words: [string, number|undefined][] }) => {
   const [pagination, setPagination] = useState({
     page: 1,
     pageSize: 100,
@@ -40,7 +40,7 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
   const refPagination = useRef<HTMLDivElement>(null);
   const isPagInView = useIsElementInView(refPagination.current);
 
-  const isFocused = useIsElementFocused(refContainer.current);
+  const { isFocused } = useIsElementFocused(refContainer.current);
   const [showLearned, setShowLearned] = useState(false);
   const [showToLearnOnly, setShowToLearnOnly] = useState(false);
 
@@ -291,7 +291,7 @@ export const PaginatedWords = ({ words }: { words: [string, number][] }) => {
                 >
                   <div className="word-typography flex-center-all" tabIndex={0}>
                     <div style={{ opacity: isLearned ? 0.2 : 1 }}>
-                      {count}: {w}
+                      {count !== undefined ? `${count}:` : ""} {w}
                     </div>
                     <div
                       style={{ paddingLeft: "0.5rem" }}

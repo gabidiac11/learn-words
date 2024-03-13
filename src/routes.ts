@@ -1,11 +1,7 @@
 export const routes = {
-  Home: {
-    path: "/home",
-    title: "Home",
-  },
-  LearnedWords: {
-    path: "/learned-words",
-    title: "Learned words",
+  Records: {
+    path: "/records",
+    title: "Records",
   },
   WordsToLearn: {
     path: "/words-to-learn",

@@ -12,7 +12,8 @@ import {
   UploadFileRounded,
   TextIncrease,
   LogoutRounded,
-  AddLink
+  AddLink,
+  StarRate,
 } from "@mui/icons-material";
 import { auth } from "../../firebase";
 import { signOut } from "firebase/auth";
@@ -21,7 +22,7 @@ import "./Header.scss";
 
 const links = [
   {
-    path: routes.Home.path,
+    path: routes.Records.path,
     icon: <Home htmlColor="white" className="outline-none" />,
   },
   {
@@ -35,6 +36,10 @@ const links = [
   {
     path: routes.Url.path,
     icon: <AddLink htmlColor="white" className="outline-none" />,
+  },
+  {
+    path: routes.WordsToLearn.path,
+    icon: <StarRate htmlColor="white" className="outline-none" />,
   },
 ];
 

@@ -14,17 +14,6 @@ Lyrics / text to add:
 - Tamara's video
 - srt from movies/series you known
 
-DONE:
-        TODO: -> fix regex match for symbols in cyrilics
-        TODO: -> auto generate name for add-text when name field is empty
-        TODO: -> remove from react history the data record (on refresh it stays on even if deleted)
-        TODO: -> clear errors after pasting valid values in add-text
 TODO: -> add tampermonkey extension that takes the url as parameter redirects you to add url record
         make a build script for this thing, it should use the url sources to match websites navigated
-TODO: -> manage ".m" sites, it should match mobile urls and make requests to the desktop ones
 TODO: -> add support for RadioFreedom and Wikipedia
-TODO: -> add conditional rendering on scrolling for long contents (seems like in android doesn't have the power to render too much items).
-        maybe you can make render an empty div to manage that, maybe you can find some react pure component or something
-TODO: -> add something nice to the meta data so the url looks nice when pasted somewhere
-TODO: -> made the content font and feel look nice
-TODO: -> add name with autofill for file record page

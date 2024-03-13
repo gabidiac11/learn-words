@@ -90,11 +90,10 @@ export const containsWords = (content: string) =>
 
 export const fetchUrlContent = async (
   url: string
-): Promise<{ name: string; content: string }> => {
+): Promise<{ name: string; content: string; url: string }> => {
   if (!url) throw new AppGenericError("Empty url.");
 
   const desktopUrl = getDesktopSite(url);
-  console.log({ desktopUrl });
   const source = allowedSources.find((f) => f.regex().test(desktopUrl));
   if (!source) {
     throw new AppGenericError(`Url is not supported`);
@@ -110,5 +109,5 @@ export const fetchUrlContent = async (
       `Ups! Something went wrong. Could not fetch content.`
     );
   }
-  return await source.parse(html);
+  return { ...(await source.parse(html)), url: desktopUrl };
 };
