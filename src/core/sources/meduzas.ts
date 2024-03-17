@@ -1,9 +1,9 @@
 import { AppGenericError } from "../types";
-import { parseHtml, parseTitle, getPostParseElement } from "./parseUtils";
+import { parseHtml, parseTitle, getPostParseElement, Source } from "./parseUtils";
 
 //Ex: https://meduza.io/feature/2024/03/05/vsu-pytayutsya-sderzhat-nastuplenie-voysk-rf-v-donetskoy-oblasti-po-rossiyskim-gorodam-ezdit-agitpoezd-sila-v-pravde
 //Ex: https://meduza.io/news/2024/03/05/institut-razvitiya-interneta-eto-on-razdaet-dengi-na-patrioticheskiy-kontent-zapustit-sobstvennyy-telekanal-my
-export const meduzaArticleSource = {
+export const meduzaArticleSource:Source = {
   name: "Meduza",
   img: "https://meduza.io/favicon-32x32.png",
   regex: () =>
@@ -60,7 +60,7 @@ export const meduzaArticleSource = {
           p: 2,
           div: 1,
           h: 1,
-        }).textContent ?? "empty",
+        }),
     };
   },
 };

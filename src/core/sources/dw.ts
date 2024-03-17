@@ -1,8 +1,8 @@
 import { AppGenericError } from "../types";
-import { parseHtml, parseTitle, getPostParseElement } from "./parseUtils";
+import { parseHtml, parseTitle, getPostParseElement, Source } from "./parseUtils";
 
 //Ex: https://www.dw.com/ru/cto-delat-tem-kto-rodilsa-29-fevrala-opyt-germanii/a-68405660
-export const dwArticleSource = {
+export const dwArticleSource: Source = {
   name: "DW",
   img: "https://www.dw.com/images/icons/favicon-32x32.png",
   regex: () => /^https:\/\/www\.dw\.com\/ru\/[\w\-_]+\/a-[\d]+\/?$/i,
@@ -32,7 +32,7 @@ export const dwArticleSource = {
           p: 0,
           div: 1,
           h: 0,
-        }).textContent ?? "empty",
+        }),
     };
   },
 };

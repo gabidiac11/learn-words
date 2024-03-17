@@ -1,8 +1,13 @@
 import axios from "axios";
-import { parseHtml, parseTitle, getPostParseElement } from "./parseUtils";
+import {
+  parseHtml,
+  parseTitle,
+  getPostParseElement,
+  Source,
+} from "./parseUtils";
 
 // Ex: https://genius.com/Husky-stupid-bullet-lyrics
-export const geniousSongSource = {
+export const geniousSongSource: Source = {
   name: "Genius Song",
   img: "https://assets.genius.com/images/apple-touch-icon.png?1709224724",
   regex: () => /^https:\/\/genius\.com\/[\w-_]+$/,
@@ -17,21 +22,27 @@ export const geniousSongSource = {
     });
     return {
       name: parseTitle(html),
-      content: getPostParseElement(body).textContent ?? "empty",
+      content: getPostParseElement(body),
     };
   },
 };
 
 //Ex: https://genius.com/albums/Monetochka/Adult-coloring-books
-export const geniousAlbumSource = {
+export const geniousAlbumSource: Source = {
   name: "Genius Album",
   img: "https://assets.genius.com/images/apple-touch-icon.png?1709224724",
   regex: () => /^https:\/\/genius\.com\/albums\/([\w-_]+)\/([\w-_]+)$/,
   parse: async (albumPageHtml: string) => {
     const getSongLinks = (): string[] => {
-      const children = parseHtml(albumPageHtml).querySelectorAll(
+      const albumNode = parseHtml(albumPageHtml);
+      let children = albumNode.querySelectorAll(
         `.chart_row-content a[href^="https://genius.com/"]`
       );
+      if (!children.length) {
+        children = albumNode.querySelectorAll(
+          `.tracklist_row-header a[href^="https://genius.com/"]`
+        );
+      }
       const urls = Array.prototype.map.call(
         children,
         function (node: HTMLAnchorElement) {
@@ -54,8 +65,8 @@ export const geniousAlbumSource = {
           "Content-Type": "text/html",
         },
       });
-      const { content: songContent } = await geniousSongSource.parse(html);
-      content += `\n\n\n========= [${++index}] =========\n\n${songContent}`;
+      const { content: songContent } = await geniousSongSource.parse(html, url);
+      content += `\n\n========= [${++index}] =========\n\n${songContent}`;
     }
 
     return { name: `Album: ${album}`, content };
