@@ -53,11 +53,10 @@
   }
 
   .word-items {
-    display: flex;
-    flex-wrap: wrap;
     width: auto;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
   }
   .word-item-container {
     flex: 1;
