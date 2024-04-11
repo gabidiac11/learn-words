@@ -57,20 +57,24 @@ export const RecordContent = ({ content }: { content: string }) => {
     setChanged(true);
   }, []);
 
-
-  useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false;
-      const sections = extractClassifiedContent(content, learnedWords);
-      if (sections.length <= 1000) {
-        onAddHighlight(sections);
-      }
-    }
-  }, [content, learnedWords, onAddHighlight]);
-
   useEffect(() => {
     setChanged(true);
   }, [learnedWords]);
+
+  useEffect(() => {
+    if (firstRender.current) {
+      const timeout = setTimeout(() => {
+        firstRender.current = false;
+        const sections = extractClassifiedContent(content, learnedWords);
+        if (sections.length <= 1000) {
+          onAddHighlight(sections);
+        }
+      }, 100);
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+  }, [content, learnedWords, onAddHighlight]);
 
   const headerProps = {
     hightlightMode,
