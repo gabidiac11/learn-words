@@ -85,6 +85,7 @@ export type RecordWordsToLearnRemove = {
 export type ContentSection = {
   content: string;
   isLearned: boolean;
+  translateUrl: string;
 }
 
 export enum Extensions {

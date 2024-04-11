@@ -214,6 +214,10 @@ button {
   align-items: center;
 }
 
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
 $array: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 40;
 @each $dim in $array {
   .ml-#{$dim} {

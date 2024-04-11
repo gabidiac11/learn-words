@@ -56,29 +56,35 @@ export const extractClassifiedContent = (
   content: string,
   learnedWords: Words
 ): ContentSection[] => {
-  const sections =
+  const sections = (
     content.match(regexes.classifiedRegex())?.reduce((prev, w) => {
-      const currentItem: ContentSection = {
+      const newItem: ContentSection = {
         content: w,
         isLearned: !!learnedWords[w?.toLocaleLowerCase()],
+        translateUrl: "",
       };
 
       if (regexes.isNonWordRegex().test(w)) {
-        currentItem.isLearned = true;
+        newItem.isLearned = true;
       }
 
       if (prev.length === 0) {
-        prev.push(currentItem);
-        return prev;
-      }
-
-      if (prev[prev.length - 1].isLearned === currentItem.isLearned) {
-        prev[prev.length - 1].content += currentItem.content;
+        prev.push(newItem);
+      } else if (prev[prev.length - 1].isLearned === newItem.isLearned) {
+        prev[prev.length - 1].content += newItem.content;
       } else {
-        prev.push(currentItem);
+        prev.push(newItem);
       }
       return prev;
-    }, [] as ContentSection[]) ?? [];
+    }, [] as ContentSection[]) ?? []
+  ).map((section) => {
+    if (!section.isLearned) {
+      section.translateUrl = `https://translate.google.com/?sl=ru&tl=en&text=${encodeURIComponent(
+        section.content
+      )}&op=translate`;
+    }
+    return section;
+  });
 
   return sections;
 };
@@ -88,7 +94,7 @@ export const containsWords = (content: string) =>
 
 export const fetchUrlContent = async (
   url: string
-): Promise<{ name: string; content: string; }> => {
+): Promise<{ name: string; content: string }> => {
   if (!url) throw new AppGenericError("Empty url.");
 
   const source = allowedSources.find((f) => f.regex().test(url));
