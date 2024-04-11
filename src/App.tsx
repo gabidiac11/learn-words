@@ -15,7 +15,7 @@ import { ErrorBoundaryFallback } from "./components/ErrorBoundaryFallback";
 import { AddRecordTextPage } from "./pages/add-record/AddRecordTextPage";
 import { NotFound } from "./pages/NotFound";
 import { AddRecordUrlPage } from "./pages/add-record/AddRecordUrlPage";
-import { RecordPage } from "./pages/RecordPage";
+import { RecordPage } from "./pages/record/RecordPage";
 
 function App() {
   const { user, isVerifying } = useAuthInit();

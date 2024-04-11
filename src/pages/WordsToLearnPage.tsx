@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Words } from "../app-context/types";
 import { useAppStateContext } from "../app-context/useAppState";
-import { PaginatedWords } from "../components/PaginatedWords/PaginatedWords";
+import { PaginatedWords } from "./record/PaginatedWords/PaginatedWords";
 
 export const WordsToLearnPage = () => {
   const { wordsToLearn } = useAppStateContext();

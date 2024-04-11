@@ -7,26 +7,33 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Pagination, { PaginationProps } from "@mui/material/Pagination";
 import "./PaginatedWords.scss";
-import AppSelect from "../AppSelect";
+import AppSelect from "../../../components/AppSelect";
 import { uuidv4 } from "@firebase/util";
-import { useAppStateContext } from "../../app-context/useAppState";
-import { useWordFunctions } from "../../core/useWordFunctions";
-import { useUIFeedback } from "../../app-context/useUIFeedback";
+import { useAppStateContext } from "../../../app-context/useAppState";
+import { useWordFunctions } from "../../../core/useWordFunctions";
+import { useUIFeedback } from "../../../app-context/useUIFeedback";
 import { StarBorder, Star, Check as CheckIcon } from "@mui/icons-material";
-import { useIsElementInView } from "../../hooks/useIsElementInView";
-import { useIsElementFocused } from "../../hooks/useIsElementFocused";
+import { useIsElementInView } from "../../../hooks/useIsElementInView";
+import { useIsElementFocused } from "../../../hooks/useIsElementFocused";
+import { Words } from "../../../app-context/types";
 
 const pageOptions = [
   25, 50, 100, 150, 200, 250, 500, 1000, 1200, 1500, 1750, 2000, 2250, 2500,
 ].map((value) => ({ value }));
 
-export const PaginatedWords = ({ words }: { words: [string, number|undefined][] }) => {
+export const PaginatedWords = ({
+  words,
+}: {
+  words: [string, number | undefined][];
+}) => {
   const [pagination, setPagination] = useState({
     page: 1,
     pageSize: 100,
     key: uuidv4(),
   });
-  const { learnedWords, wordsToLearn } = useAppStateContext();
+  const { learnedWords: learnedWordsCtx, wordsToLearn } = useAppStateContext();
+  const [learnedWords, setLearnedWords] = useState<Words>(learnedWordsCtx);
+
   const {
     addLearnedWord,
     removeLearnedWord,
@@ -103,6 +110,12 @@ export const PaginatedWords = ({ words }: { words: [string, number|undefined][] 
   const numOfPages = useMemo(() => {
     return Math.ceil(filteredWords.length / pagination.pageSize);
   }, [filteredWords.length, pagination.pageSize]);
+
+  const currentPageWords = useMemo(
+    () =>
+      filteredWords.filter(([w, count], i) => i >= startIndex && i <= endIndex),
+    [endIndex, filteredWords, startIndex]
+  );
 
   const onToggleLearnedWords = useCallback(
     (word: string) => {
@@ -226,6 +239,22 @@ export const PaginatedWords = ({ words }: { words: [string, number|undefined][] 
     scrollToThis();
   }, [scrollToThis]);
 
+  useEffect(() => {
+    // if learnedWords from ctx is changed from record content, prevent potential awkard height change from here
+    if (!isContainerInView) {
+      setSessionWords((prev) => {
+        const notInAnymore = currentPageWords
+          .filter(([w]) => !learnedWordsCtx[w])
+          .reduce((o, [curr]) => ({ ...o, [curr]: true }), {});
+        return {
+          ...prev,
+          ...notInAnymore,
+        };
+      });
+    }
+    setLearnedWords(learnedWordsCtx);
+  }, [isContainerInView, learnedWordsCtx, currentPageWords]);
+
   const paginationProps: PaginationProps = {
     size: "large",
     className: "pagination",
@@ -271,10 +300,7 @@ export const PaginatedWords = ({ words }: { words: [string, number|undefined][] 
         </div>
       </div>
       <div className="word-items">
-        {filteredWords.map(([w, count], i) => {
-          if (!(i >= startIndex && i <= endIndex)) {
-            return null;
-          }
+        {currentPageWords.map(([w, count], i) => {
           const isLearned = !!learnedWords[w];
           const isAddedToLearningList = !!wordsToLearn[w];
           return (
