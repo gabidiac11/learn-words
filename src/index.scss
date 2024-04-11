@@ -298,3 +298,9 @@ a.no-anchor {
   font-weight: inherit;
   line-height: inherit;
 }
+
+.words-to-learn-page {
+  .paginated-words, .view-items {
+    width: 100%;
+  }
+}

@@ -25,7 +25,7 @@ export const WordsToLearnPage = () => {
     });
   }, [wordsToLearn]);
   return (
-    <div className="view page-wrapper">
+    <div className="view page-wrapper words-to-learn-page">
       <div>
         <h3>Words to learn</h3>
       </div>
