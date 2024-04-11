@@ -101,22 +101,22 @@ export const AddRecordTextPage = () => {
             </Button>
             <PasteButton onChange={onPaste} />
           </div>
+          
+          <Input
+            className="mb-15"
+            error={errors.name}
+            onChange={onChangeName}
+            value={name}
+            placeholder="Enter name"
+          />
 
           <Textarea
-            className="mb-15"
             error={errors.content}
             aria-label="minimum height"
             value={content}
             onChange={onChangeContent}
             minRows={5}
             placeholder="Enter content..."
-          />
-
-          <Input
-            error={errors.name}
-            onChange={onChangeName}
-            value={name}
-            placeholder="Enter name"
           />
         </div>
       </div>
