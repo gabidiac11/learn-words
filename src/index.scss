@@ -298,6 +298,12 @@ a.no-anchor {
   font-size: inherit;
   font-weight: inherit;
   line-height: inherit;
+
+  &.underline {
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
 .words-to-learn-page {

@@ -217,7 +217,7 @@ function RecordItem({
           <CardContent>
             <Typography className="pb-5 record-name">
               <RouterLink
-                className="no-anchor"
+                className="no-anchor underline"
                 to={`${routes.Record.path.replace(":id", record.id)}`}
               >
                 {name}
