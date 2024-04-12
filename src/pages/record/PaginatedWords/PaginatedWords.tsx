@@ -15,7 +15,11 @@ import { useUIFeedback } from "../../../app-context/useUIFeedback";
 import { StarBorder, Star, Check as CheckIcon } from "@mui/icons-material";
 import { useIsElementInView } from "../../../hooks/useIsElementInView";
 import { useIsElementFocused } from "../../../hooks/useIsElementFocused";
-import { Words } from "../../../app-context/types";
+import {
+  AppEventType,
+  AppWordLearningEvent,
+  useAppEvents,
+} from "../../../hooks/useAppEvents";
 
 const pageOptions = [
   25, 50, 100, 150, 200, 250, 500, 1000, 1200, 1500, 1750, 2000, 2250, 2500,
@@ -31,16 +35,17 @@ export const PaginatedWords = ({
     pageSize: 100,
     key: uuidv4(),
   });
-  const { learnedWords: learnedWordsCtx, wordsToLearn } = useAppStateContext();
-  const [learnedWords, setLearnedWords] = useState<Words>(learnedWordsCtx);
-
+  const { learnedWords, wordsToLearn } = useAppStateContext();
   const {
     addLearnedWord,
     removeLearnedWord,
     addWordToLearningList,
     removeWordFromLearningList,
   } = useWordFunctions();
+
   const { displayError } = useUIFeedback();
+  const { addListener, removeListener, emitWordLearningChange } =
+    useAppEvents();
 
   const refContainer = useRef<HTMLDivElement>(null);
   const isContainerInView = useIsElementInView(refContainer.current);
@@ -121,6 +126,8 @@ export const PaginatedWords = ({
     (word: string) => {
       try {
         const id = learnedWords[word];
+        emitWordLearningChange(word, !id);
+
         if (id) {
           removeLearnedWord(word, id);
         } else {
@@ -131,7 +138,13 @@ export const PaginatedWords = ({
         displayError(error);
       }
     },
-    [addLearnedWord, displayError, learnedWords, removeLearnedWord]
+    [
+      addLearnedWord,
+      displayError,
+      emitWordLearningChange,
+      learnedWords,
+      removeLearnedWord,
+    ]
   );
 
   const onToggleWordsToLearn = useCallback(
@@ -240,20 +253,18 @@ export const PaginatedWords = ({
   }, [scrollToThis]);
 
   useEffect(() => {
-    // if learnedWords from ctx is changed from record content, prevent potential awkard height change from here
-    if (!isContainerInView) {
-      setSessionWords((prev) => {
-        const notInAnymore = currentPageWords
-          .filter(([w]) => !learnedWordsCtx[w])
-          .reduce((o, [curr]) => ({ ...o, [curr]: true }), {});
-        return {
-          ...prev,
-          ...notInAnymore,
-        };
-      });
-    }
-    setLearnedWords(learnedWordsCtx);
-  }, [isContainerInView, learnedWordsCtx, currentPageWords]);
+    const handler = ({ detail: { word } }: AppWordLearningEvent) => {
+      setSessionWords((prev) => ({
+        ...prev,
+        [word]: true,
+      }));
+    };
+
+    addListener(AppEventType.WordLearningChange, handler);
+    return () => {
+      removeListener(AppEventType.WordLearningChange, handler);
+    };
+  }, [addListener, removeListener]);
 
   const paginationProps: PaginationProps = {
     size: "large",

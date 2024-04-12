@@ -1,8 +1,13 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAppStateContext } from "../../../app-context/useAppState";
 import { useUIFeedback } from "../../../app-context/useUIFeedback";
 import { ContentSection } from "../../../core/types";
 import { useWordFunctions } from "../../../core/useWordFunctions";
+import {
+  AppEventType,
+  AppWordLearningEvent,
+  useAppEvents,
+} from "../../../hooks/useAppEvents";
 import { HightlightMode } from "./contentHightligh";
 
 export const Sections = ({
@@ -15,6 +20,8 @@ export const Sections = ({
   const { displayError } = useUIFeedback();
   const { learnedWords } = useAppStateContext();
   const { addLearnedWord, removeLearnedWord } = useWordFunctions();
+  const { addListener, removeListener, emitWordLearningChange } =
+    useAppEvents();
 
   const [added, setAdded] = useState<{ [key: string]: boolean }>({});
 
@@ -23,6 +30,8 @@ export const Sections = ({
       try {
         const id = learnedWords[word];
         setAdded((p) => ({ ...p, [word]: !id }));
+        emitWordLearningChange(word, !id);
+
         if (id) {
           removeLearnedWord(word, id);
         } else {
@@ -32,8 +41,26 @@ export const Sections = ({
         displayError(error);
       }
     },
-    [addLearnedWord, displayError, learnedWords, removeLearnedWord]
+    [
+      addLearnedWord,
+      displayError,
+      emitWordLearningChange,
+      learnedWords,
+      removeLearnedWord,
+    ]
   );
+
+  useEffect(() => {
+    const handler = ({ detail: { word, learned } }: AppWordLearningEvent) => {
+      setAdded((p) => ({ ...p, [word]: learned }));
+    };
+
+    addListener(AppEventType.WordLearningChange, handler);
+    return () => {
+      removeListener(AppEventType.WordLearningChange, handler);
+    };
+  }, [addListener, removeListener]);
+
   return (
     <>
       {sections.map((section, i) => {
@@ -42,7 +69,9 @@ export const Sections = ({
             <AddModeSection
               content={section.content}
               added={added[section.content.toLocaleLowerCase()]}
-              onClick={() => onToggleLearnedWords(section.content.toLowerCase())}
+              onClick={() =>
+                onToggleLearnedWords(section.content.toLowerCase())
+              }
             />
           );
         }
@@ -62,13 +91,13 @@ const Section = ({
   hightlightMode: HightlightMode;
 }) => {
   if (section.isLearned) {
-    return <span>{section.content}</span>;
+    return <span className="txt-content">{section.content}</span>;
   }
   if (hightlightMode === HightlightMode.TranslateLink) {
     return (
       <span>
         <a
-          className="no-anchor txt-unknwon"
+          className="no-anchor txt-content txt-unknwon"
           href={section.translateUrl}
           target="_blank"
           rel="noreferrer"
@@ -78,7 +107,7 @@ const Section = ({
       </span>
     );
   }
-  return <span className="txt-unknwon">{section.content}</span>;
+  return <span className="txt-content txt-unknwon">{section.content}</span>;
 };
 
 const AddModeSection = ({
@@ -93,7 +122,7 @@ const AddModeSection = ({
   return (
     <span
       onClick={onClick}
-      className={`txt-editable txt-unknwon ${
+      className={`txt-content txt-editable txt-unknwon ${
         added === true ? "txt-learned" : ""
       }`}
     >
