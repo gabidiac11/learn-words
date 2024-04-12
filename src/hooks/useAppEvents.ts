@@ -2,6 +2,7 @@ import { useCallback } from "react";
 
 export enum AppEventType {
   WordLearningChange,
+  TriggerRefreshPagination,
 }
 
 export type AppWordLearningEvent = {
@@ -11,7 +12,13 @@ export type AppWordLearningEvent = {
     word: string;
   };
 };
-export type AppEvent = AppWordLearningEvent;
+export type TriggerRefreshPagEvent = {
+  type: AppEventType.TriggerRefreshPagination;
+};
+export type AppEvent = {
+  type: AppEventType;
+  detail: any;
+};
 export type AppEventHandler = (e: AppEvent) => void;
 export type AppEventListener = {
   type: AppEventType;
@@ -75,5 +82,17 @@ export const useAppEvents = () => {
     [emitEvent]
   );
 
-  return { addListener, removeListener, emitWordLearningChange };
+  const emitPaginationTrigger = useCallback(() => {
+    emitEvent({
+      type: AppEventType.TriggerRefreshPagination,
+      detail: null,
+    });
+  }, [emitEvent]);
+
+  return {
+    addListener,
+    removeListener,
+    emitWordLearningChange,
+    emitPaginationTrigger,
+  };
 };

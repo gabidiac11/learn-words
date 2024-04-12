@@ -2,8 +2,9 @@
   .record-card {
     width: 320px;
     max-width: 100%;
+    position: relative;
     @media only screen and (max-width: 350px) {
-        width: 100%;
+      width: 100%;
     }
     .record-name {
       text-align: left;
@@ -11,6 +12,28 @@
     img {
       width: 15px;
       height: 15px;
+    }
+  }
+}
+
+.record-wrapper {
+  position: relative;
+  .btn-rec-delete {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    padding: 10px;
+    opacity: 0.05;
+    z-index: 9;
+    svg {
+      width: 1.2em;
+      height: 1.2em;
+    }
+    &:hover {
+      opacity: 1;
+      svg {
+        color: red;
+      }
     }
   }
 }

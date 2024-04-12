@@ -1,12 +1,5 @@
 import { SelectChangeEvent } from "@mui/material";
-import {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Pagination, { PaginationProps } from "@mui/material/Pagination";
 import AppSelect from "../AppSelect";
 import { uuidv4 } from "@firebase/util";
@@ -18,6 +11,7 @@ import "./PaginatedResults.scss";
 import { useRefState } from "../../hooks/useRefState";
 import { Loader } from "../Loader";
 import SelectedMenu, { DropdownProps } from "../AppDropdown/AppDropdown";
+import { AppEventType, useAppEvents } from "../../hooks/useAppEvents";
 
 const pageOptions = [
   25, 50, 100, 150, 200, 250, 500, 1000, 1200, 1500, 1750, 2000, 2250, 2500,
@@ -29,18 +23,22 @@ export const PaginatedResults = ({
   onChange: onChnagePagination,
   defaultPageSize,
   filterOptions,
+  items,
+  renderItem,
 }: {
+  renderItem: (item: any) => React.ReactNode;
   defaultPageSize?: number;
   filterOptions?: PaginationDropdownProps;
+  items: any[];
   onChange: (
     page: number,
     pageSize: number,
     filterValues: string[]
-  ) => Promise<{ total: number; items: ReactNode[] }>;
+  ) => Promise<{ total: number }>;
 }) => {
-  const [items, setItems] = useState<ReactNode[]>([]);
   const { displayError } = useUIFeedback();
   const [filterValues, setFilterValues] = useState<string[]>([]);
+  const { addListener, removeListener } = useAppEvents();
 
   const [pagination, setPagination] = useState({
     page: 1,
@@ -66,7 +64,7 @@ export const PaginatedResults = ({
     async (page: number, pageSize: number, filterValues: string[]) => {
       try {
         setLoading(true);
-        const { total, items } = await onChnagePagination(
+        const { total } = await onChnagePagination(
           page,
           pageSize,
           filterValues
@@ -78,7 +76,6 @@ export const PaginatedResults = ({
           total,
         });
         setFilterValues(filterValues);
-        setItems(items);
       } catch (error) {
         console.error(error);
         displayError(error);
@@ -163,6 +160,24 @@ export const PaginatedResults = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    const handler = () => {
+      updatePagination(pagination.page, pagination.pageSize, filterValues);
+    };
+
+    addListener(AppEventType.TriggerRefreshPagination, handler);
+    return () => {
+      removeListener(AppEventType.TriggerRefreshPagination, handler);
+    };
+  }, [
+    addListener,
+    filterValues,
+    pagination.page,
+    pagination.pageSize,
+    removeListener,
+    updatePagination,
+  ]);
+
   const paginationProps: PaginationProps = {
     size: "large",
     className: "pagination",
@@ -204,9 +219,9 @@ export const PaginatedResults = ({
         )}
 
         {!loading &&
-          items.map((reactNode, i) => (
+          items.map((item, i) => (
             <div className="item-container" key={i}>
-              {reactNode}
+              {renderItem(item)}
             </div>
           ))}
 

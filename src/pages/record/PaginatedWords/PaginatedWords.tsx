@@ -16,8 +16,8 @@ import { StarBorder, Star, Check as CheckIcon } from "@mui/icons-material";
 import { useIsElementInView } from "../../../hooks/useIsElementInView";
 import { useIsElementFocused } from "../../../hooks/useIsElementFocused";
 import {
+  AppEvent,
   AppEventType,
-  AppWordLearningEvent,
   useAppEvents,
 } from "../../../hooks/useAppEvents";
 
@@ -253,7 +253,7 @@ export const PaginatedWords = ({
   }, [scrollToThis]);
 
   useEffect(() => {
-    const handler = ({ detail: { word } }: AppWordLearningEvent) => {
+    const handler = ({ detail: { word } }: AppEvent) => {
       setSessionWords((prev) => ({
         ...prev,
         [word]: true,

@@ -4,8 +4,8 @@ import { useUIFeedback } from "../../../app-context/useUIFeedback";
 import { ContentSection } from "../../../core/types";
 import { useWordFunctions } from "../../../core/useWordFunctions";
 import {
+  AppEvent,
   AppEventType,
-  AppWordLearningEvent,
   useAppEvents,
 } from "../../../hooks/useAppEvents";
 import { HightlightMode } from "./contentHightligh";
@@ -51,7 +51,7 @@ export const Sections = ({
   );
 
   useEffect(() => {
-    const handler = ({ detail: { word, learned } }: AppWordLearningEvent) => {
+    const handler = ({ detail: { word, learned } }: AppEvent) => {
       setAdded((p) => ({ ...p, [word]: learned }));
     };
 

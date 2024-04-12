@@ -18,6 +18,9 @@ import { allowedSources } from "../../core/sources";
 import "./RecordsPage.scss";
 import { useAppStateContext } from "../../app-context/useAppState";
 import FormatColorTextIcon from "@mui/icons-material/FormatColorText";
+import DeleteIcon from "@mui/icons-material/Cancel";
+import { useUIFeedback } from "../../app-context/useUIFeedback";
+import { useAppEvents } from "../../hooks/useAppEvents";
 
 // const mockRecords: LearningRecord[] = Array.from({ length: 1000 }).map(
 //   (v, i) => ({
@@ -83,6 +86,9 @@ export default function Records() {
   const { getRecords } = useWordFunctions();
   const recordsRef = useRef<LearningRecord[]>();
   const { wordsToLearn } = useAppStateContext();
+  const { emitPaginationTrigger } = useAppEvents();
+
+  const [pageRecords, setPageRecords] = useState<LearningRecord[]>([]);
 
   const filterOptions = useMemo(() => {
     const items = Object.keys(wordsToLearn);
@@ -102,7 +108,7 @@ export default function Records() {
     async (page: number, pageSize: number, filterValues: string[]) => {
       // we use mânăreală here because firebase db doesn't provide pagination...
       const results = recordsRef.current ?? (await getRecords());
-      if(!recordsRef.current) recordsRef.current = results;
+      if (!recordsRef.current) recordsRef.current = results;
 
       // const [records, total] = await getPaginatedRecordsMock(page, pageSize);
       const [records, total] = await getPaginatedRecords(
@@ -111,9 +117,10 @@ export default function Records() {
         results,
         filterValues
       );
+
+      setPageRecords(records);
       return {
         total,
-        items: records.map((r) => <RecordItem {...r} />),
       };
     },
     [getRecords]
@@ -126,6 +133,22 @@ export default function Records() {
         <PaginatedResults
           filterOptions={filterOptions}
           onChange={onChangePaginatin}
+          items={pageRecords}
+          renderItem={(item: any) => {
+            const r = item as LearningRecord;
+            return (
+              <RecordItem
+                key={r.id}
+                record={r}
+                afterRemove={(id) => {
+                  recordsRef.current = recordsRef.current?.filter(
+                    (f) => f.id !== id
+                  );
+                  emitPaginationTrigger();
+                }}
+              />
+            );
+          }}
         />
       </div>
     </div>
@@ -138,7 +161,16 @@ function getRecordName(name: string) {
   return name.slice(0, limit - 3) + "...";
 }
 
-function RecordItem(record: LearningRecordWithStats) {
+function RecordItem({
+  record,
+  afterRemove,
+}: {
+  record: LearningRecordWithStats;
+  afterRemove: (id: string) => void;
+}) {
+  const { removeRecord } = useWordFunctions();
+  const { displayError, displaySuccess } = useUIFeedback();
+
   const [name] = useState(getRecordName(record.name));
   const [date] = useState(
     moment(record.timestamp).format("MMMM Do YYYY, h:mm:ss a")
@@ -150,68 +182,96 @@ function RecordItem(record: LearningRecordWithStats) {
     allowedSources.find((s) => s.regex().test(record.source ?? ""))?.img
   );
 
-  // TODO: add a checkbox with words to learn when searching by that sort by num of occurences (totals), date
+  const onRemoveRecord = useCallback(async () => {
+    try {
+      await removeRecord(record.id);
+      displaySuccess("Record deleted.");
+      afterRemove(record.id);
+    } catch (error) {
+      console.error(error);
+      displayError(error);
+    }
+  }, [afterRemove, displayError, displaySuccess, record.id, removeRecord]);
+
   return (
-    <RouterLink
-      className="no-anchor record-item"
-      to={`${routes.Record.path.replace(":id", record.id)}`}
-    >
-      <Card
-        variant="outlined"
-        orientation="horizontal"
-        className="record-card"
-        sx={{
-          width: 220,
-          "&:hover": {
-            boxShadow: "md",
-            borderColor: "neutral.outlinedHoverBorder",
-          },
-        }}
+    <div className="record-wrapper" itemID={record.id}>
+      <button
+        onClick={() => onRemoveRecord()}
+        className="no-btn btn-rec-delete"
       >
-        <CardContent>
-          <Typography className="pb-5 record-name">{name}</Typography>
-          <Chip
-            className="mb-5 pt-5 pb-5 pl-10 pr-10"
-            variant="outlined"
-            color="primary"
-            size="sm"
-            sx={{ pointerEvents: "none" }}
-          >
-            {date}
-          </Chip>
-          {sourceName && (
-            <Link
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-              href={record.source}
-              target="_blank"
-              style={!sourceName ? { visibility: "hidden" } : {}}
-            >
-              <Chip
-                className="mb-5"
-                variant="outlined"
-                color="primary"
-                size="sm"
-                sx={{ pointerEvents: "none" }}
+        <DeleteIcon fontSize="medium" />
+      </button>
+      <div className="record-item">
+        <Card
+          variant="outlined"
+          orientation="horizontal"
+          className="record-card"
+          sx={{
+            width: 220,
+            "&:hover": {
+              boxShadow: "md",
+              borderColor: "neutral.outlinedHoverBorder",
+            },
+          }}
+        >
+          <CardContent>
+            <Typography className="pb-5 record-name">
+              <RouterLink
+                className="no-anchor"
+                to={`${routes.Record.path.replace(":id", record.id)}`}
               >
-                <div className="flex-center-all p-5">
-                  {sourceImage && (
-                    <img alt={sourceName} className="mr-10" src={sourceImage} />
-                  )}
-                  <div>{sourceName}</div>
-                </div>
-              </Chip>
-            </Link>
-          )}
-          {!!record.stats &&
-            record.stats.map(([word, occurences], i) => (
-              <div key={i} className="pt-10">
-                {word}: {occurences}
+                {name}
+              </RouterLink>
+            </Typography>
+            <Chip
+              className="mb-5 pt-5 pb-5 pl-10 pr-10"
+              variant="outlined"
+              color="primary"
+              size="sm"
+              sx={{ pointerEvents: "none" }}
+            >
+              {date}
+            </Chip>
+            {sourceName && (
+              <div>
+                <Link
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  href={record.source}
+                  target="_blank"
+                  style={!sourceName ? { visibility: "hidden" } : {}}
+                >
+                  <Chip
+                    className="mb-5"
+                    variant="outlined"
+                    color="primary"
+                    size="sm"
+                    sx={{ pointerEvents: "none" }}
+                  >
+                    <div className="flex-center-all p-5">
+                      {sourceImage && (
+                        <img
+                          alt={sourceName}
+                          className="mr-10"
+                          src={sourceImage}
+                        />
+                      )}
+                      <div>{sourceName}</div>
+                    </div>
+                  </Chip>
+                </Link>
               </div>
-            ))}
-        </CardContent>
-      </Card>
-    </RouterLink>
+            )}
+            {!!record.stats &&
+              record.stats.map(([word, occurences], i) => (
+                <div key={i} className="pt-10">
+                  {word}: {occurences}
+                </div>
+              ))}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }
