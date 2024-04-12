@@ -25,9 +25,11 @@
     padding: 10px;
     opacity: 0.05;
     z-index: 9;
+    transition: opacity 0.5s;
     svg {
       width: 1.2em;
       height: 1.2em;
+      transition: color 0.5s;
     }
     &:hover {
       opacity: 1;
