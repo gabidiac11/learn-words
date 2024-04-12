@@ -222,6 +222,10 @@ button {
   flex-wrap: wrap;
 }
 
+.flex-end {
+  justify-content: flex-end;
+}
+
 $array: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 40;
 @each $dim in $array {
   .ml-#{$dim} {
@@ -284,9 +288,6 @@ a.no-anchor {
 
   /* Remove default color */
   color: inherit;
-
-  /* Remove default outline */
-  outline: none;
 
   /* Remove default padding and margin */
   padding: 0;

@@ -29,16 +29,22 @@
     font-weight: 500;
     flex-wrap: wrap;
   }
+  .txt-content {
+    font-weight: 500;
+  }
   .txt-unknwon {
     color: red;
-    font-weight: 600;
     background-size: 100% 3px;
     padding-bottom: 2px;
   }
   a.txt-unknwon {
+    color: rgb(12, 86, 160);
     background-position: 0 100%;
     background-image: linear-gradient(45deg, #8749d3, #f14c99 30%, #417bf7);
     background-repeat: repeat-x;
+    &:hover {
+      color: rgb(2, 13, 26);
+    }
   }
 
   .txt-editable.txt-unknwon {

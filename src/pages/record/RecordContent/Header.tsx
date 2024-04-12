@@ -5,35 +5,38 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import AbcIcon from "@mui/icons-material/Abc";
 import "./RecordContent.scss";
 import { ClearRounded, Translate } from "@mui/icons-material";
-import { HightlightMode } from "./contentHightligh";
+import { highlightModes, HightlightMode } from "./contentHightligh";
 import { ContentSection } from "../../../core/types";
 
 export const RecordContentHeader = ({
-    hightlightMode,
-    sections,
-    changed,
-    switchHightligh,
-    onAddHighlight,
-    onRemoveHighlight,
-  }: {
-    hightlightMode: HightlightMode;
-    sections: ContentSection[] | undefined;
-    changed: boolean | undefined;
-    switchHightligh: () => void;
-    onAddHighlight: () => void;
-    onRemoveHighlight: () => void;
-  }) => {
-    return (
-      <div className="record-panel mb-15">
-        <div className="flex flex-wrap">
-          {!!sections && (
+  hightlightMode,
+  sections,
+  changed,
+  onChangeHightlighMode,
+  onAddHighlight,
+  onRemoveHighlight,
+}: {
+  hightlightMode: HightlightMode;
+  sections: ContentSection[] | undefined;
+  changed: boolean | undefined;
+  onChangeHightlighMode: (value: HightlightMode) => void;
+  onAddHighlight: () => void;
+  onRemoveHighlight: () => void;
+}) => {
+  return (
+    <div className="record-panel mb-15 flex flex-wrap">
+      <div className="flex flex-end">
+        {!!sections &&
+          highlightModes.map((h, i) => (
             <Button
+              key={i}
               variant="solid"
               className="mr-15 mb-5 btn-mode"
-              onClick={switchHightligh}
+              onClick={() => onChangeHightlighMode(h)}
+              color={h === hightlightMode ? "primary" : "neutral"}
             >
               {(() => {
-                switch (hightlightMode) {
+                switch (h) {
                   case HightlightMode.TranslateLink:
                     return <Translate />;
                   case HightlightMode.Add:
@@ -43,29 +46,27 @@ export const RecordContentHeader = ({
                 }
               })()}
             </Button>
-          )}
+          ))}
+      </div>
+      <div className="flex flex-end">
+        <Button
+          className="mr-15 mb-5"
+          variant="solid"
+          disabled={!changed}
+          onClick={() => onAddHighlight()}
+        >
+          {!sections ? <HighlightIcon /> : <RefreshIcon />}
+        </Button>
+        {!!sections && (
           <Button
             className="mr-15 mb-5"
             variant="solid"
-            disabled={!changed}
-            onClick={() => onAddHighlight()}
-            startDecorator={!sections ? <HighlightIcon /> : <RefreshIcon />}
+            onClick={onRemoveHighlight}
           >
-            {!sections && "Add"}
-            {!!sections && "Refresh"}
+            <ClearRounded />
           </Button>
-          {!!sections && (
-            <Button
-              className="mr-15 mb-5"
-              variant="solid"
-              onClick={onRemoveHighlight}
-              startDecorator={<ClearRounded />}
-            >
-              Remove color
-            </Button>
-          )}
-        </div>
+        )}
       </div>
-    );
-  };
-  
+    </div>
+  );
+};

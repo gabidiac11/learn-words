@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import "./RecordContent.scss";
 import { Sections } from "./Sections";
-import { highlightModes, HightlightMode } from "./contentHightligh";
+import { HightlightMode } from "./contentHightligh";
 import { RecordContentHeader } from "./Header";
 import { useAppStateContext } from "../../../app-context/useAppState";
 import { useUIFeedback } from "../../../app-context/useUIFeedback";
@@ -41,16 +41,6 @@ export const RecordContent = ({ content }: { content: string }) => {
     [content, displayError, learnedWords]
   );
 
-  const switchHightligh = useCallback(() => {
-    setHightlighMode((current) => {
-      let cInd = highlightModes.indexOf(current) + 1;
-      if (cInd >= highlightModes.length) {
-        cInd = 0;
-      }
-      return highlightModes[cInd];
-    });
-  }, []);
-
   const onRemoveHighlight = useCallback(() => {
     setSections(undefined);
     setHightlighMode(HightlightMode.Normal);
@@ -80,7 +70,7 @@ export const RecordContent = ({ content }: { content: string }) => {
     hightlightMode,
     sections,
     changed,
-    switchHightligh,
+    onChangeHightlighMode: setHightlighMode,
     onAddHighlight,
     onRemoveHighlight,
   };

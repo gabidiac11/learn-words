@@ -97,6 +97,7 @@ const Section = ({
     return (
       <span>
         <a
+          tabIndex={0}
           className="no-anchor txt-content txt-unknwon"
           href={section.translateUrl}
           target="_blank"
@@ -107,7 +108,7 @@ const Section = ({
       </span>
     );
   }
-  return <span className="txt-content txt-unknwon">{section.content}</span>;
+  return <span tabIndex={0} className="txt-content txt-unknwon">{section.content}</span>;
 };
 
 const AddModeSection = ({
@@ -121,6 +122,7 @@ const AddModeSection = ({
 }) => {
   return (
     <span
+      tabIndex={0}
       onClick={onClick}
       className={`txt-content txt-editable txt-unknwon ${
         added === true ? "txt-learned" : ""

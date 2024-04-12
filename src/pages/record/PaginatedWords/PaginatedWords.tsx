@@ -326,11 +326,12 @@ export const PaginatedWords = ({
                       : `You actually know what '${w}' means? Click here to mark.`
                   }
                 >
-                  <div className="word-typography flex-center-all" tabIndex={0}>
-                    <div style={{ opacity: isLearned ? 0.2 : 1 }}>
+                  <div className="word-typography flex-center-all">
+                    <div tabIndex={0} style={{ opacity: isLearned ? 0.2 : 1 }}>
                       {count !== undefined ? `${count}:` : ""} {w}
                     </div>
                     <div
+                      tabIndex={-1}
                       style={{ paddingLeft: "0.5rem" }}
                       className={`flex-center-all btn-action flex-center-all ${
                         isLearned ? "btn-active" : ""
@@ -341,6 +342,7 @@ export const PaginatedWords = ({
                   </div>
                 </div>
                 <button
+                  tabIndex={-1}
                   className={`btn-action btn-word-add flex-center-all ${
                     isAddedToLearningList ? "btn-active" : ""
                   }`}
