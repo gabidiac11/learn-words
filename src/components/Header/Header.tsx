@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Avatar } from "@mui/material";
-import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 import {
   Home,
   UploadFileRounded,
@@ -45,7 +45,6 @@ const links = [
 
 export default function Header() {
   const [user] = useAuthState(auth);
-  const navigate = useNavigate();
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -53,15 +52,15 @@ export default function Header() {
         <Toolbar>
           {user && (
             <>
-              {links.map((item) => (
-                <button
-                  key={item.path}
-                  className="no-btn header-btn mr-20"
-                  onClick={() => navigate(item.path)}
+              {links.map((item, i) => (
+                <Link
+                  key={i}
+                  className="no-anchor header-btn mr-20"
                   tabIndex={0}
+                  to={item.path}
                 >
                   {item.icon}
-                </button>
+                </Link>
               ))}
 
               <Box sx={{ flexGrow: 1 }} />
