@@ -6,11 +6,12 @@ import { useIsElementFocused } from "../../hooks/useIsElementFocused";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
 import CloseIcon from "@mui/icons-material/Close";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 import "./AppDropdown.scss";
 
 export type DropdownProps = {
-  label: string;
+  label?: string;
   icon?: React.ReactNode;
   value: string[];
   options: {
@@ -20,7 +21,7 @@ export type DropdownProps = {
   onChange: (value: string[]) => void;
 };
 
-export default function SelectedMenu({
+export default function AppDropdown({
   label,
   value,
   icon,
@@ -78,11 +79,12 @@ export default function SelectedMenu({
       <div ref={activatorRef} className="flex-center-all">
         <MenuButton
           onClick={onOpen}
-          startDecorator={icon}
-          className="app-dropdown-btn"
+          className="app-dropdown-btn pl-10 pr-5"
         >
-          {label}
+          {icon}
+          {!!label && label}
           {value.length > 0 ? ` (${value.length})` : ""}
+          <ArrowDropDownIcon />
         </MenuButton>
         {value.length > 0 && (
           <button

@@ -14,6 +14,9 @@ export type AppWordLearningEvent = {
 };
 export type TriggerRefreshPagEvent = {
   type: AppEventType.TriggerRefreshPagination;
+  detail?: {
+    page?: number;
+  }
 };
 export type AppEvent = {
   type: AppEventType;
@@ -82,10 +85,12 @@ export const useAppEvents = () => {
     [emitEvent]
   );
 
-  const emitPaginationTrigger = useCallback(() => {
+  const emitPaginationTrigger = useCallback((page: number|undefined = undefined) => {
     emitEvent({
       type: AppEventType.TriggerRefreshPagination,
-      detail: null,
+      detail: {
+        page
+      },
     });
   }, [emitEvent]);
 

@@ -10,34 +10,34 @@ import { useIsElementFocused } from "../../hooks/useIsElementFocused";
 import "./PaginatedResults.scss";
 import { useRefState } from "../../hooks/useRefState";
 import { Loader } from "../Loader";
-import SelectedMenu, { DropdownProps } from "../AppDropdown/AppDropdown";
-import { AppEventType, useAppEvents } from "../../hooks/useAppEvents";
+import {
+  AppEventHandler,
+  AppEventType,
+  TriggerRefreshPagEvent,
+  useAppEvents,
+} from "../../hooks/useAppEvents";
 
 const pageOptions = [
   25, 50, 100, 150, 200, 250, 500, 1000, 1200, 1500, 1750, 2000, 2250, 2500,
 ].map((value) => ({ value }));
 
-export type PaginationDropdownProps = Omit<DropdownProps, "onChange" | "value">;
-
 export const PaginatedResults = ({
   onChange: onChnagePagination,
   defaultPageSize,
-  filterOptions,
+  headerChild,
   items,
   renderItem,
 }: {
   renderItem: (item: any) => React.ReactNode;
+  headerChild?: React.ReactNode;
   defaultPageSize?: number;
-  filterOptions?: PaginationDropdownProps;
   items: any[];
   onChange: (
     page: number,
-    pageSize: number,
-    filterValues: string[]
+    pageSize: number
   ) => Promise<{ total: number }>;
 }) => {
   const { displayError } = useUIFeedback();
-  const [filterValues, setFilterValues] = useState<string[]>([]);
   const { addListener, removeListener } = useAppEvents();
 
   const [pagination, setPagination] = useState({
@@ -61,13 +61,12 @@ export const PaginatedResults = ({
   }, [pagination.total, pagination.pageSize]);
 
   const updatePagination = useCallback(
-    async (page: number, pageSize: number, filterValues: string[]) => {
+    async (page: number, pageSize: number) => {
       try {
         setLoading(true);
         const { total } = await onChnagePagination(
           page,
-          pageSize,
-          filterValues
+          pageSize
         );
         setPagination({
           pageSize,
@@ -75,7 +74,6 @@ export const PaginatedResults = ({
           key: uuidv4(),
           total,
         });
-        setFilterValues(filterValues);
       } catch (error) {
         console.error(error);
         displayError(error);
@@ -89,23 +87,16 @@ export const PaginatedResults = ({
   const onChangePageSize = useCallback(
     async (e: SelectChangeEvent<string>) => {
       const pageSize = Number(e.target.value);
-      updatePagination(1, pageSize, filterValues);
+      updatePagination(1, pageSize);
     },
-    [filterValues, updatePagination]
+    [updatePagination]
   );
 
   const onChangePage = useCallback(
     async (page: number) => {
-      updatePagination(page, pagination.pageSize, filterValues);
+      updatePagination(page, pagination.pageSize);
     },
-    [updatePagination, pagination.pageSize, filterValues]
-  );
-
-  const onChangeFilter = useCallback(
-    async (value: string[]) => {
-      updatePagination(1, pagination.pageSize, value);
-    },
-    [pagination.pageSize, updatePagination]
+    [updatePagination, pagination.pageSize]
   );
 
   const scrollToThis = useCallback(() => {
@@ -127,14 +118,12 @@ export const PaginatedResults = ({
       if (e.key === "ArrowRight" && pagination.page + 1 <= numOfPages) {
         updatePagination(
           pagination.page + 1,
-          pagination.pageSize,
-          filterValues
+          pagination.pageSize
         );
       } else if (e.key === "ArrowLeft" && pagination.page - 1 > 0) {
         updatePagination(
           pagination.page - 1,
-          pagination.pageSize,
-          filterValues
+          pagination.pageSize
         );
       }
     };
@@ -143,7 +132,6 @@ export const PaginatedResults = ({
       window.removeEventListener("keydown", onArrows);
     };
   }, [
-    filterValues,
     isFocused,
     numOfPages,
     onChangePage,
@@ -156,13 +144,17 @@ export const PaginatedResults = ({
   }, [scrollToThis]);
 
   useEffect(() => {
-    updatePagination(pagination.page, pagination.pageSize, filterValues);
+    updatePagination(pagination.page, pagination.pageSize);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    const handler = () => {
-      updatePagination(pagination.page, pagination.pageSize, filterValues);
+    const handler: AppEventHandler = (e) => {
+      const { page } = (e as TriggerRefreshPagEvent).detail ?? {};
+      updatePagination(
+        page ?? pagination.page,
+        pagination.pageSize
+      );
     };
 
     addListener(AppEventType.TriggerRefreshPagination, handler);
@@ -171,7 +163,6 @@ export const PaginatedResults = ({
     };
   }, [
     addListener,
-    filterValues,
     pagination.page,
     pagination.pageSize,
     removeListener,
@@ -201,15 +192,7 @@ export const PaginatedResults = ({
         <div ref={refPagination}>
           <Pagination {...paginationProps} key={pagination.key} />
         </div>
-        {filterOptions && (
-          <SelectedMenu
-            label={filterOptions.label}
-            icon={filterOptions.icon}
-            options={filterOptions.options}
-            value={filterValues}
-            onChange={onChangeFilter}
-          />
-        )}
+        {!!headerChild && headerChild}
       </div>
       <div className="paginated-items">
         {loading && (
