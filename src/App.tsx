@@ -1,88 +1,25 @@
-import { useEffect } from "react";
-import Records from "./pages/records/RecordsPage";
-import Login from "./auth/Login";
-import { BrowserRouter, useLocation, useNavigate } from "react-router-dom";
-import { Routes, Route } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { useAuthInit } from "./auth/authHooks";
 import { LoaderView } from "./components/Loader";
-import { AddRecordFilePage } from "./pages/add-record/AddRecordFilePage";
-import Header from "./components/Header/Header";
-import { WordsToLearnPage } from "./pages/WordsToLearnPage";
-import { routes as r, routes } from "./routes";
-import { WithInitialization } from "./components/WithInitialization";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorBoundaryFallback } from "./components/ErrorBoundaryFallback";
-import { AddRecordTextPage } from "./pages/add-record/AddRecordTextPage";
-import { NotFound } from "./pages/NotFound";
-import { AddRecordUrlPage } from "./pages/add-record/AddRecordUrlPage";
-import { RecordPage } from "./pages/record/RecordPage";
+import { AppRoutes } from "./AppRoutes";
 
 function App() {
   const { user, isVerifying } = useAuthInit();
-  const isAuth = !!user;
   if (isVerifying) {
     return <LoaderView />;
   }
+  
   return (
     <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
       <BrowserRouter>
         <div className="main">
-          {user ? (
-            <WithInitialization>
-              <Header />
-              <Routes>
-                <Route path={r.Records.path} element={<Records />} />
-                <Route
-                  path={r.WordsToLearn.path}
-                  element={<WordsToLearnPage />}
-                />
-                <Route path={r.File.path} element={<AddRecordFilePage />} />
-                <Route path={r.Text.path} element={<AddRecordTextPage />} />
-                <Route path={r.Url.path} element={<AddRecordUrlPage />} />
-                <Route path={r.Record.path} element={<RecordPage />} />
-                <Route path={"/404"} element={<NotFound />} />
-                <Route
-                  path="*"
-                  element={<DefaultRouteRedirection isAuth={isAuth} />}
-                />
-              </Routes>
-            </WithInitialization>
-          ) : (
-            <Routes>
-              <Route path={r.Login.path} element={<Login />} />
-              <Route
-                path="*"
-                element={<DefaultRouteRedirection isAuth={isAuth} />}
-              />
-            </Routes>
-          )}
+          <AppRoutes user={user} />
         </div>
       </BrowserRouter>
     </ErrorBoundary>
   );
 }
-
-const DefaultRouteRedirection = (props: { isAuth: boolean }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    if (!props.isAuth) {
-      navigate("/login", { replace: true });
-      return;
-    }
-    if (
-      location.pathname === "/login" ||
-      location.pathname === "/" ||
-      !location.pathname
-    ) {
-      navigate(routes.Records.path, { replace: true });
-    } else {
-      navigate("/404", { replace: true });
-    }
-  }, [location.pathname, navigate, props.isAuth]);
-
-  return <LoaderView />;
-};
 
 export default App;
