@@ -7,9 +7,11 @@ export const PasteButton = ({
   onChange,
   disabled,
   children,
+  className,
 }: {
   onChange: (value: string) => void;
   disabled?: boolean;
+  className?: string;
 } & PropsWithChildren) => {
   const { displayError } = useUIFeedback();
   const copyFromClipboard = useCallback(async () => {
@@ -25,11 +27,10 @@ export const PasteButton = ({
   return (
     <Button
       disabled={disabled}
-      className="paste-btn"
-      startIcon={<ContentPaste />}
+      className={`paste-btn ${className ?? ""}`}
+      startIcon={children ? <ContentPaste /> : undefined}
       onClick={copyFromClipboard}
-    >
-      {children ?? "Paste"}
-    </Button>
+      children={children ?? <ContentPaste />}
+      />
   );
 };

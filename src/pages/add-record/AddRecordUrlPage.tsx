@@ -172,9 +172,11 @@ export const AddRecordUrlPage = () => {
                 onChange={onChangeUrlValue}
                 endDecorator={
                   <div className="flex">
-                    <PasteButton disabled={isFetching} onChange={onPaste}>
-                      {" "}
-                    </PasteButton>
+                    <PasteButton
+                      className="mr-10"
+                      disabled={isFetching}
+                      onChange={onPaste}
+                    />
                     <Button
                       onClick={() => onFetchUrlContent(urlValue)}
                       loading={isFetching}

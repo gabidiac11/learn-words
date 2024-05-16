@@ -8,6 +8,7 @@ import { PasteButton } from "../../components/PasteButton";
 import { useNavigate } from "react-router-dom";
 
 import "./AddRecord.scss";
+import { SourceOptions } from "./SourceOptions";
 
 export const AddRecordTextPage = () => {
   const { displayError } = useUIFeedback();
@@ -16,6 +17,7 @@ export const AddRecordTextPage = () => {
 
   const [content, setContent] = useState("");
   const [name, setName] = useState("");
+  const [source, setSource] = useState<string>();
   const [errors, setErrors] = useState({
     name: false,
     content: false,
@@ -24,14 +26,14 @@ export const AddRecordTextPage = () => {
   const onGenerate = useCallback(
     async (name: string, content: string) => {
       try {
-        const record = await addRecord(name, content);
+        const record = await addRecord(name, content, source);
         navigate(`/records/${record.id}`, { state: record });
       } catch (error) {
         console.error(error);
         displayError(error);
       }
     },
-    [addRecord, displayError, navigate]
+    [addRecord, displayError, navigate, source]
   );
 
   const onChangeContent = useCallback(
@@ -99,9 +101,9 @@ export const AddRecordTextPage = () => {
             >
               Generate
             </Button>
-            <PasteButton onChange={onPaste} />
+            <PasteButton onChange={onPaste}>Paste</PasteButton>
           </div>
-          
+
           <Input
             className="mb-15"
             error={errors.name}
@@ -109,6 +111,8 @@ export const AddRecordTextPage = () => {
             value={name}
             placeholder="Enter name"
           />
+
+          <SourceOptions className="mb-15" urlValue={source} setUrlValue={setSource} />
 
           <Textarea
             error={errors.content}

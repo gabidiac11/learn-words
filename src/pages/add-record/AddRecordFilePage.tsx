@@ -8,6 +8,7 @@ import { readFile } from "../../core/wordHelpers";
 import { useNavigate } from "react-router-dom";
 import { RocketLaunch } from "@mui/icons-material";
 import { Input, Textarea } from "@mui/joy";
+import { SourceOptions } from "./SourceOptions";
 
 import "./AddRecord.scss";
 
@@ -22,6 +23,7 @@ export const AddRecordFilePage = () => {
     fileName: string;
     name: string;
     content: string;
+    source?: string;
   } | null>(null);
 
   const [errors, setErrors] = useState({
@@ -29,17 +31,24 @@ export const AddRecordFilePage = () => {
     content: false,
   });
 
+  const onChangeUrlValue = useCallback((source: string) => {
+    setWordState((w) => {
+      if (!w) throw new Error();
+      return { ...w, source };
+    });
+  }, []);
+
   const onGenerate = useCallback(async () => {
     try {
       setErrors({
         content: !wordState,
-        name: !wordState?.name
+        name: !wordState?.name,
       });
 
       if (!wordState) throw new AppGenericError("File not selected.");
       if (!wordState.name) throw new AppGenericError("Empty name.");
 
-      const record = await addRecord(wordState.name, wordState.content);
+      const record = await addRecord(wordState.name, wordState.content, wordState.source);
       navigate(`/records/${record.id}`, { state: record });
     } catch (error) {
       console.error(error);
@@ -117,6 +126,15 @@ export const AddRecordFilePage = () => {
               onChange={onChangeName}
               value={wordState.name}
               placeholder="Enter name"
+            />
+          </div>
+        )}
+
+        {wordState && (
+          <div className="mb-20 page-input-container">
+            <SourceOptions
+              urlValue={wordState.source}
+              setUrlValue={onChangeUrlValue}
             />
           </div>
         )}
