@@ -106,7 +106,7 @@ const Section = ({
           className="no-anchor txt-content txt-unknwon"
           onClick={(e) => {}}
           href={isMobile() ? section.translateUrlAndroid : section.translateUrl}
-          target="_blank"
+          target="_self"
           rel="noreferrer"
         >
           {section.content}
