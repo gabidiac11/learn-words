@@ -1,3 +1,4 @@
+// import { Tooltip } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { useAppStateContext } from "../../../app-context/useAppState";
 import { useUIFeedback } from "../../../app-context/useUIFeedback";
@@ -99,17 +100,43 @@ const Section = ({
         <a
           tabIndex={0}
           className="no-anchor txt-content txt-unknwon"
+          onClick={(e) => {}}
           href={section.translateUrl}
-          target="_blank"
-          rel="noreferrer"
+          // target="_blank"
+          // rel="noreferrer"
         >
           {section.content}
         </a>
       </span>
     );
   }
-  return <span tabIndex={0} className="txt-content txt-unknwon">{section.content}</span>;
+  return (
+    <span tabIndex={0} className="txt-content txt-unknwon">
+      {section.content}
+    </span>
+  );
 };
+
+// const TranslationSection = (section: ContentSection) => {
+//   // const [translation, setTranslation] = useState<string>();
+  
+//   return (
+//     <span>
+//       {/* <Tooltip onMouseOver={} title={!} disableInteractive> */}
+//         <a
+//           tabIndex={0}
+//           className="no-anchor txt-content txt-unknwon"
+//           // onClick={(e) => {}}
+//           href={section.translateUrl}
+//           // target=""
+//           // rel="noreferrer"
+//         >
+//           {section.content}
+//         </a>
+//       {/* </Tooltip> */}
+//     </span>
+//   );
+// };
 
 const AddModeSection = ({
   content,
