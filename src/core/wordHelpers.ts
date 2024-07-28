@@ -62,6 +62,7 @@ export const extractClassifiedContent = (
         content: w,
         isLearned: !!learnedWords[w?.toLocaleLowerCase()],
         translateUrl: "",
+        translateUrlAndroid: "",
       };
 
       if (regexes.isNonWordRegex().test(w)) {
@@ -82,6 +83,10 @@ export const extractClassifiedContent = (
       section.translateUrl = `https://translate.google.com/?sl=ru&tl=en&text=${encodeURIComponent(
         section.content
       )}&op=translate`;
+
+      section.translateUrlAndroid = `intent://translate.google.com/?sl=ru&tl=en&text=${encodeURIComponent(
+        section.content
+      )}}#Intent;scheme=https;package=com.google.android.apps.translate;end`;
     }
     return section;
   });

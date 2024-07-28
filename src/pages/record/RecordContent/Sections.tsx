@@ -84,6 +84,10 @@ export const Sections = ({
   );
 };
 
+function isMobile() {
+  return /Mobi|Android/i.test(navigator.userAgent);
+}
+
 const Section = ({
   section,
   hightlightMode,
@@ -101,9 +105,9 @@ const Section = ({
           tabIndex={0}
           className="no-anchor txt-content txt-unknwon"
           onClick={(e) => {}}
-          href={section.translateUrl}
-          // target="_blank"
-          // rel="noreferrer"
+          href={isMobile() ? section.translateUrlAndroid : section.translateUrl}
+          target="_blank"
+          rel="noreferrer"
         >
           {section.content}
         </a>

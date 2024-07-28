@@ -86,6 +86,7 @@ export type ContentSection = {
   content: string;
   isLearned: boolean;
   translateUrl: string;
+  translateUrlAndroid: string;
 }
 
 export enum Extensions {
