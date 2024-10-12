@@ -24,6 +24,15 @@ function getRecordName(name: string) {
   return name.slice(0, limit - 3) + "...";
 }
 
+function GetSourceName(record: LearningRecordWithStats) {
+  try {
+    return record.source ? new URL(record.source).hostname : null;
+  } catch (err) {
+    console.log(err, record.source, { record });
+    return null;
+  }
+}
+
 export function RecordItem({
   record,
   afterRemove,
@@ -38,9 +47,7 @@ export function RecordItem({
   const [date] = useState(
     moment(record.timestamp).format("MMMM Do YYYY, h:mm:ss a")
   );
-  const [sourceName] = useState(
-    record.source ? new URL(record.source).hostname : null
-  );
+  const [sourceName] = useState(GetSourceName(record));
   const [sourceImage] = useState(
     allowedSources.find((s) => s.regex().test(record.source ?? ""))?.img
   );

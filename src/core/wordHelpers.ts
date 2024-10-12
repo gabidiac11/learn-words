@@ -86,7 +86,7 @@ export const extractClassifiedContent = (
 
       section.translateUrlAndroid = `intent://translate.google.com/?sl=ru&tl=en&text=${encodeURIComponent(
         section.content
-      )}}#Intent;scheme=https;package=com.google.android.apps.translate;end`;
+      )}#Intent;scheme=https;package=com.google.android.apps.translate;end`;
     }
     return section;
   });
